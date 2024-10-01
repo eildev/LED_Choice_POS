@@ -381,6 +381,7 @@ class TransactionController extends Controller
         'wallet_balance' => $newBalance,
         'total_payable' => $newPayable
     ]);
+    $customer->save;
     //Account Transaction Table
     $accountTransaction = new AccountTransaction;
     $accountTransaction->branch_id =  Auth::user()->branch_id;
