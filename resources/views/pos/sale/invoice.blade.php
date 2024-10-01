@@ -217,8 +217,7 @@
                     <div class="container-fluid w-100 btn_group">
                         <!--Due payment--->
                         @php
-                           $transaction = App\Models\Transaction::where('particulars', 'Sale#'.$sale->id)
-                            ->where('customer_id', $customer->id)
+                           $transaction = App\Models\Transaction::where('customer_id', $customer->id)
                             ->latest('created_at')
                             ->first();
                         @endphp
