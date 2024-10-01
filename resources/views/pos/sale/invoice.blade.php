@@ -224,7 +224,7 @@
                        {{-- @dd($transaction) --}}
                         @if($transaction && $transaction->particulars === 'Sale#'.$sale->id)
                         {{-- <a class="btn btn-outline-primary float-left mt-4">Payment</a> --}}
-                        <a href="#" class="add_money_modal btn btn-outline-primary float-left mt-4"  data-bs-toggle="modal" data-bs-target="#duePayment">
+                        <a href="#" class="add_money_modal btn btn-outline-primary float-left mt-4" id="payment-btn"  data-bs-toggle="modal" data-bs-target="#duePayment">
                             Payment
                         </a>
                         @endif
@@ -257,7 +257,6 @@
     </div>
 
     {{-- //Payment --}}
-
       <!-- Modal add Payment -->
       <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
       aria-hidden="true">
@@ -268,33 +267,33 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
               </div>
               <div class="modal-body">
+
                   <form id="addPaymentForm" class="addPaymentForm row" method="POST">
                     <input type="hidden" name="sale_id" id="sale_id" value="{{ $sale->id }}">
                     <input type="hidden" name="customer_id" id="customer_id" value="{{ $customer->id }}">
+                    <input type="hidden" name="transaction_id" id="transaction_id" value="{{$transaction->id}}">
+                    <div>
 
+                        <label for="name"  class="form-label" >Due Amount : <span id="due-amount"> {{ number_format($sale->due, 2) }}</span>  ৳ </label> <br>
+                        <label for="remaining"  class="form-label">Remaining Due:
+                            <span class="text-danger" id="remaining-due"> {{number_format($sale->due, 2) }} </span>৳
+                        </label>
+                    </div>
                       <div class="mb-3 col-md-6">
                           <label for="name" class="form-label">Balance Amount <span
                                   class="text-danger">*</span></label>
-                          <input id="defaultconfig" type="number" class="form-control add_amount"
-                              name="payment_balance" type="text" onkeyup="errorRemove(this);"
-                              onblur="errorRemove(this);">
-                          <span class="text-danger add_amount_error"></span>
+                          <input  type="number" class="form-control add_amount payment_balance"
+                              name="payment_balance" onkeyup="dueShow()" onkeydown="errorRemove(this);" >
+                              <span class="text-danger payment_balance_error"></span>
                       </div>
-                      @php
-                          $bank = App\Models\Bank::get();
-                      @endphp
+
                       <div class="mb-3 col-md-6">
-                          <label for="name" class="form-label">Transaction Account</label>
-                          <select class="form-control" name="account" id="">
-                              <option value="" selected disabled>Select Account</option>
-                              @foreach ($bank as $item)
-                              <option value="{{$item->id}}">{{$item->name}}</option>
-                              @endforeach
+                          <label for="name" class="form-label">Transaction Account <span
+                            class="text-danger">*</span></label>
+                          <select class="form-control account" name="account" id="" onkeyup="errorRemove(this);" >
+                              <option value="{{$transaction->bank->id}}">{{$transaction->bank->name}}</option>
                           </select>
-                      </div>
-                      <div class="mb-3 col-md-12">
-                          <label for="name" class="form-label">Note</label>
-                          <textarea class="form-control" name="note" id="" cols="30" rows="5"></textarea>
+                          <span class="text-danger account_error"></span>
                       </div>
               </div>
               <div class="modal-footer">
@@ -306,7 +305,37 @@
       </div>
   </div>
 <script>
-        const savePayment = document.getElementById('add_payment');
+        function dueShow(){
+            let dueAmountText = document.getElementById('due-amount').innerText.trim();
+            let dueAmount = parseFloat(dueAmountText.replace(/[^\d.-]/g, ''));
+
+             let paymentBalanceText  = document.querySelector('.payment_balance').value.trim() ;
+             let  paymentBalance =  parseFloat(paymentBalanceText)
+
+            let remainingDue = dueAmount - (paymentBalance || 0);
+            document.getElementById('remaining-due').innerText = remainingDue.toFixed(2) ?? 0 + ' ৳' ;
+
+        }
+
+       function errorRemove(element) {
+            tag = element.tagName.toLowerCase();
+            if (element.value != '') {
+                // console.log('ok');
+                if (tag == 'select') {
+                    $(element).closest('.mb-3').find('.text-danger').hide();
+                } else {
+                    $(element).siblings('span').hide();
+                    $(element).css('border-color', 'green');
+                }
+            }
+        }
+         function showError(payment_balance, message) {
+                $(payment_balance).css('border-color', 'red');
+                $(payment_balance).focus();
+                $(`${payment_balance}_error`).show().text(message);
+        }
+
+      const savePayment = document.getElementById('add_payment');
       savePayment.addEventListener('click', function(e) {
         // console.log('Working on payment')
         e.preventDefault();
@@ -318,6 +347,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     // AJAX request
     $.ajax({
         url: '/due/invoice/payment/transaction',
@@ -334,20 +364,22 @@
                 toastr.success(res.message);
                 window.location.reload();
             } else {
-                // Show the error in the correct field
-                if (res.error && res.error.update_balance) {
-                    $('.add_amount_error').text(res.error.update_balance);
+                if (res.error.payment_balance) {
+                showError('.payment_balance', res.error.payment_balance);
+                }
+                if (res.error.account) {
+                showError('.account', res.error.account);
                 }
             }
         },
         error: function(err) {
-            toastr.error('An error occurred, please try again.');
+            toastr.error('An error occurred, Empty Feild Required.');
         }
     });
 });
 </script>
-  <script>
 
+  <script>
 
     function setPaperSize('$invoice_type') {
         let styleElement = document.getElementById('print-style');
