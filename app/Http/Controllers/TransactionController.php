@@ -354,15 +354,14 @@ class TransactionController extends Controller
     }
     public function invoicePaymentStore(Request $request){
     //   dd($request->all());
-
+    //Sale Table
     $sale = Sale::find($request->sale_id);
     $sale->due = $sale->due - $request->payment_balance;
     $sale->paid = $sale->paid + $request->payment_balance;
-    $sale->save();
+    //Transaction Table
     $tracsBalance = Transaction::where('customer_id',$request->customer_id)->latest()->first();
     $transBalance = $tracsBalance->balance ?? 0;
     $newTrasBalance = $transBalance + $request->payment_balance;
-
     $transaction = Transaction::create([
         'branch_id' => Auth::user()->branch_id,
         'date' => Carbon::now(),
@@ -374,7 +373,15 @@ class TransactionController extends Controller
         'balance' => $newTrasBalance,
         'customer_id' => $request->customer_id
     ]);
-    //Account transaction
+    //Customer Table
+    $customer = Customer::findOrFail($request->customer_id);
+    $newBalance = $customer->wallet_balance - $request->payment_balance;
+    $newPayable = $customer->total_payable + $request->payment_balance;
+    $customer->update([
+        'wallet_balance' => $newBalance,
+        'total_payable' => $newPayable
+    ]);
+    //Account Transaction Table
     $accountTransaction = new AccountTransaction;
     $accountTransaction->branch_id =  Auth::user()->branch_id;
     $accountTransaction->reference_id = $transaction->id;
