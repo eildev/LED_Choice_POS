@@ -353,26 +353,25 @@ class TransactionController extends Controller
         return view('pos.investor.investor-invoice', compact('investors'));
     }
     public function invoicePaymentStore(Request $request){
-    //   dd($request->all());
-    //Sale Table
+        $validator = Validator::make($request->all(), [
+            'payment_balance' => 'required',
+            'account' => 'required',
+        ]);
+
+    if ($validator->passes()) {
     $sale = Sale::find($request->sale_id);
     $sale->due = $sale->due - $request->payment_balance;
     $sale->paid = $sale->paid + $request->payment_balance;
     //Transaction Table
-    $tracsBalance = Transaction::where('customer_id',$request->customer_id)->latest()->first();
+
+    $tracsBalance = Transaction::findOrFail($request->transaction_id);
+
+    $tracsBalance->credit = $tracsBalance->credit + $request->payment_balance;
+    $tracsBalance->debit = $tracsBalance->debit + $request->payment_balance;
     $transBalance = $tracsBalance->balance ?? 0;
-    $newTrasBalance = $transBalance + $request->payment_balance;
-    $transaction = Transaction::create([
-        'branch_id' => Auth::user()->branch_id,
-        'date' => Carbon::now(),
-        'payment_type' => 'receive',
-        'particulars' => 'InvoicePayment',
-        'credit' => $request->payment_balance,
-        'payment_method' => $request->account,
-        'note' => $request->note,
-        'balance' => $newTrasBalance,
-        'customer_id' => $request->customer_id
-    ]);
+    $tracsBalance->balance = $transBalance + $request->payment_balance;
+    // dd($tracsBalance->balance);
+    $tracsBalance->save();
     //Customer Table
     $customer = Customer::findOrFail($request->customer_id);
     $newBalance = $customer->wallet_balance - $request->payment_balance;
@@ -381,11 +380,12 @@ class TransactionController extends Controller
         'wallet_balance' => $newBalance,
         'total_payable' => $newPayable
     ]);
-    $customer->save;
+    $customer->save();
+
     //Account Transaction Table
     $accountTransaction = new AccountTransaction;
     $accountTransaction->branch_id =  Auth::user()->branch_id;
-    $accountTransaction->reference_id = $transaction->id;
+    $accountTransaction->reference_id = $request->sale_id;
     $accountTransaction->purpose =  'InvoicePayment';
     $accountTransaction->account_id =  $request->account;
     $accountTransaction->credit = $request->payment_balance;
@@ -401,7 +401,12 @@ class TransactionController extends Controller
     return response()->json([
         'status' => 200,
         'message' => 'Successfully Payment',
-
     ]);
-    }
+} else {
+    return response()->json([
+        'status' => '500',
+        'error' => $validator->messages()
+    ]);
+}}
+
 }
