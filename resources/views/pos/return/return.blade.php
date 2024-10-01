@@ -1,10 +1,6 @@
 @extends('master')
 @section('title', '| Return')
 @section('admin')
-    @php
-        $customer = App\Models\Customer::findOrFail($sale->customer_id);
-        $saleItems = App\Models\SaleItem::where('sale_id', $sale->id)->get();
-    @endphp
     <div class="row mt-0">
         <div class="col-lg-4 grid-margin stretch-card mb-3">
             <div class="card">
@@ -259,9 +255,9 @@
                     data: allData,
                     success: function(response) {
                         if (response.status == 200) {
-                            alert('Products returned successfully!');
+                            alert('Products returned successfull!');
                         } else {
-                            alert('Products returned unsuccessfully!');
+                            alert('Products returned unsuccessfull');
                         }
 
                     }
