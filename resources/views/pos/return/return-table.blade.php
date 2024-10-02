@@ -3,7 +3,7 @@
         <tr>
             <td class="id">{{ $index + 1 }}</td>
             <td>
-                <a href="">
+                <a href="{{ route('return.products.invoice', $data->id) }}">
                     #{{ $data->return_invoice_number ?? 0 }}
                 </a>
 
@@ -15,8 +15,8 @@
                 <ul>
                     {{-- @dd($data->returnItem) --}}
                     @foreach ($data->returnItem as $item)
-                        <li>{{ $item->product->name ?? '' }}
-                        </li>
+                        {{-- @dd($item->product) --}}
+                        <li>{{ $item->product->name ?? '' }}</li>
                     @endforeach
                 </ul>
             </td>

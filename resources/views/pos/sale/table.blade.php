@@ -32,7 +32,12 @@
                 ৳ {{ $data->paid ?? 0 }}
             </td>
             <td>
-                no
+                @if ($data->returned > 0)
+                    Yes <br>
+                    {{ $data->returned }}
+                @else
+                    No
+                @endif
             </td>
             <td>
                 @if ($data->due > 0)
@@ -77,21 +82,17 @@
                         Manage
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-
                         @if (Auth::user()->can('pos-manage.invoice'))
                             <a class="dropdown-item" href="{{ route('sale.invoice', $data->id) }}"><i
                                     class="fa-solid fa-file-invoice me-2"></i> Invoice</a>
                         @endif
                         <a class="dropdown-item " href="{{ route('sale.view.details', $data->id) }}"><i
                                 class="fa-solid fa-eye me-2"></i> Show</a>
-                        <a class="dropdown-item" href="{{ route('return', $data->id) }}"><i
-                                style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i></i>
-                            Return</a>
-                        {{-- @if ($data->due > 0)
-                            <a class="dropdown-item add_payment" href="#" data-bs-toggle="modal"
-                                data-bs-target="#paymentModal" data-id="{{ $data->id }}"><i
-                                    class="fa-solid fa-credit-card me-2"></i> Payment</a>
-                        @endif --}}
+                        @if ($data->returned == 0)
+                            <a class="dropdown-item" href="{{ route('return', $data->id) }}"><i
+                                    style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i></i>
+                                Return</a>
+                        @endif
                         @if (Auth::user()->can('pos-manage.delete'))
                             <a class="dropdown-item" id="delete" href="{{ route('sale.destroy', $data->id) }}"><i
                                     class="fa-solid fa-trash-can me-2"></i>Delete</a>

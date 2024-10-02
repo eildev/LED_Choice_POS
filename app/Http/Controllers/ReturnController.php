@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountTransaction;
+use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\ReturnItem;
@@ -21,8 +22,8 @@ class ReturnController extends Controller
     {
         $sale = Sale::findOrFail($id);
         $customer = Customer::findOrFail($sale->customer_id);
-        $saleItems = SaleItem::where('sale_id', $sale->id)->get();
-        return view('pos.return.return-invoice', compact('sale', 'customer', 'saleItems'));
+        $sale_items = SaleItem::where('sale_id', $sale->id)->get();
+        return view('pos.return.return', compact('sale', 'customer', 'sale_items'));
     }
     public function ReturnItems($id)
     {
@@ -48,14 +49,21 @@ class ReturnController extends Controller
             // dd($oldBalance);
             if ($oldBalance && $oldBalance->balance > 0 && $oldBalance->balance >= $request->refund_amount ?? 0) {
                 $total_return_profit = 0;
+                $totalQuantity = 0;
+                $productCost = 0;
                 foreach ($request->sale_items as $sale_item) {
                     $saleItem = SaleItem::findOrFail($sale_item['product_id']);
+
                     $actual_total_return_price = $saleItem->rate * $sale_item['quantity'];
                     $return_profit = $actual_total_return_price - $sale_item['total_price'];
                     $total_return_profit += $return_profit;
-                }
 
-                // Once the loop is complete, dump the total return profit
+                    $product = Product::findOrFail($saleItem->product_id);
+                    $total = $product->cost * ($saleItem->qty - $sale_item['quantity']);
+                    // dd($total);
+                    $productCost += $total;
+                    $totalQuantity += $sale_item['quantity'];
+                }
                 // dd($total_return_profit);
 
                 $returns = new Returns;
@@ -74,17 +82,19 @@ class ReturnController extends Controller
 
 
                 // dd($request->refund_amount);
-                $totalQuantity = 0;
+
                 foreach ($request->sale_items as $sale_item) {
-                    // dd($sale_item['product_id']);
+                    $saleItem = SaleItem::findOrFail($sale_item['product_id']);
+                    $product = Product::findOrFail($saleItem->product_id);
+
                     $returnItems = new ReturnItem;
                     $returnItems->return_id = $returns->id;
-                    $returnItems->product_id = (int)$sale_item['product_id'];
+                    $returnItems->product_id = $product->id;
                     $returnItems->quantity = (int)$sale_item['quantity'];
                     $returnItems->return_price = (int)$sale_item['return_price'];
                     $returnItems->product_total = (int)$sale_item['total_price'];
 
-                    $saleItem = SaleItem::findOrFail($sale_item['product_id']);
+
 
                     $actual_total_return_price = $saleItem->rate * $sale_item['quantity'];
                     $return_profit = $actual_total_return_price - $sale_item['total_price'];
@@ -106,15 +116,14 @@ class ReturnController extends Controller
 
 
                     $saleItem->qty = $saleItem->qty - $sale_item['quantity'];
-                    $saleItem->sub_total = ($saleItem->qty - $sale_item['quantity']) * $saleItem->rate;
+                    $saleItem->sub_total = $saleItem->rate * $saleItem->qty;
+                    $saleItem->total_purchase_cost = $product->cost * $saleItem->qty;
                     $saleItem->save();
 
-                    $product = Product::findOrFail($saleItem->product_id);
+
                     $product->stock = $product->stock + $sale_item['quantity'];
                     $product->total_sold = $product->total_sold - $sale_item['quantity'];
                     $product->save();
-
-                    $totalQuantity += $sale_item['quantity'];
                 }
 
                 // dd($totalQuantity);
@@ -125,14 +134,22 @@ class ReturnController extends Controller
                 $sales->change_amount = $sales->change_amount - $request->refund_amount;
                 $sales->receivable = $sales->receivable - $request->refund_amount;
                 $sales->final_receivable = $sales->final_receivable - $request->refund_amount;
-                // if ($sales->paid > 0 && $request->adjustDue == 'yes') {
-                //     $sales->paid = $sales->paid - $request->refund_amount;
-                // }
-                if ($sales->due > 0 && $request->adjustDue == 'yes') {
-                    $sales->due = $sales->due - $request->refund_amount;
+                if ($request->adjustDue == 'yes') {
+                    if ($sales->due >  $request->refund_amount) {
+                        $sales->due = $sales->due - $request->refund_amount;
+                        $sales->returned = $request->refund_amount;
+                    } else {
+                        $sales->due = 0;
+                        $sales->paid = $sales->paid - ($request->refund_amount - $sales->due);
+                        $sales->returned = $request->refund_amount - $sales->due;
+                    }
+                } else {
+                    $sales->returned = $request->refund_amount;
+                    $sales->paid = $sales->paid - $request->refund_amount;
                 }
-                $sales->returned = $request->refund_amount;
-                $sales->profit = $sales->profit - $total_return_profit;
+                $totalSell = $sales->total - $request->refund_amount;
+                $saleProfit = $totalSell - $productCost;
+                $sales->profit = $saleProfit + $total_return_profit;
                 $sales->save();
 
 
@@ -158,8 +175,7 @@ class ReturnController extends Controller
                 $transaction->created_at = Carbon::now();
                 if ($request->adjustDue == 'yes') {
                     if ($customerDue > $request->refund_amount) {
-                        $dueBalance = $customerDue - $request->refund_amount;
-                        $customer->wallet_balance = $customer->wallet_balance - $dueBalance;
+                        $customer->wallet_balance = $customer->wallet_balance - $request->refund_amount;
 
                         $accountTransaction->purpose =  'Adjust Due';
                         $accountTransaction->credit = $request->refund_amount;
@@ -168,7 +184,6 @@ class ReturnController extends Controller
                         $transaction->particulars = 'Adjust Due Collection';
                         $transaction->payment_type = 'receive';
                         $transaction->credit = $request->refund_amount;
-
                         $transaction->balance = $lastTransactionData->balance + $request->refund_amount;
                     } else {
                         $returnBalance = $request->refund_amount - $customerDue;
@@ -218,11 +233,21 @@ class ReturnController extends Controller
     public function returnProductsList()
     {
         if (Auth::user()->id == 1) {
-            $returns = Returns::get();
+            $returns = Returns::latest()->get();
         } else {
             $returns = Returns::where('branch_id', Auth::user()->branch_id)->latest()->get();
         }
 
         return view('pos.return.return-view', compact('returns'));
+    }
+    public function returnProductsInvoice($id)
+    {
+        $return = Returns::findOrFail($id);
+        $branch = Branch::findOrFail($return->branch_id);
+        $customer = Customer::findOrFail($return->customer_id);
+        $return_items = ReturnItem::where('return_id', $return->id)->get();
+
+
+        return view('pos.return.invoice', compact('return', 'branch', 'customer', 'return_items'));
     }
 }
