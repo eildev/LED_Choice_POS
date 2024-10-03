@@ -203,19 +203,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/purchase', 'index')->name('purchase');
         Route::post('/purchase/store', 'store')->name('purchase.store');
         Route::get('/purchase/view', 'view')->name('purchase.view');
-        Route::get('/purchase/view-all', 'viewAll')->name('purchase.view.all');
         Route::get('/purchase/supplier/{id}', 'supplierName')->name('purchase.supplier.name');
         Route::get('/purchase/item/{id}', 'purchaseItem')->name('purchase.item');
-        Route::get('/purchase/product/{id}', 'productName')->name('purchase.product.name');
-        Route::get('/purchase/view/{id}', 'viewDetails')->name('purchase.view.details');
         Route::get('/purchase/edit/{id}', 'edit')->name('purchase.edit');
         Route::post('/purchase/update/{id}', 'update')->name('purchase.update');
         Route::get('/purchase/destroy/{id}', 'destroy')->name('purchase.destroy');
         Route::get('/purchase/invoice/{id}', 'invoice')->name('purchase.invoice');
+        Route::get('/purchase/money-receipt/{id}', 'moneyReceipt')->name('purchase.money.receipt');
+        Route::get('/purchase/image/{id}', 'imageToPdf')->name('purchase.image');
         Route::get('/purchase/filter', 'filter')->name('purchase.filter');
-        Route::post('/transaction/edit-amount/{id}', 'editTransaction')->name('purchase.edit.transaction');
-        Route::get('/purchase/find/{id}', 'find')->name('purchase.find');
-        Route::get('/supplier/details/{id}', 'getSupplierDetails');
     });
     // damage related route
     Route::controller(DamageController::class)->group(function () {
@@ -289,7 +285,6 @@ Route::middleware('auth')->group(function () {
 
         //
         Route::post('/due/invoice/payment/transaction', 'invoicePaymentStore');
-
     });
     // pos setting related route
     Route::controller(PosSettingsController::class)->group(function () {

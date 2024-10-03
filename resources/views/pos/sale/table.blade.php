@@ -9,12 +9,19 @@
             </td>
             <td>{{ $data->customer->name ?? '' }}</td>
             <td>
+                @php
+                    $totalItems = $data->saleItem->count();
+                    $displayItems = $data->saleItem->take(5);
+                    $remainingItems = $totalItems - 5;
+                @endphp
                 <ul>
-                    @foreach ($data->saleItem as $item)
-                        <li>{{ $item->product->name ?? '' }}
-                            <br>({{ $item->product->barcode ?? '' }})
-                        </li>
+                    @foreach ($displayItems as $items)
+                        <li>{{ $items->product->name ?? '' }}</li>
                     @endforeach
+
+                    @if ($totalItems > 5)
+                        <li>and more {{ $remainingItems }}...</li>
+                    @endif
                 </ul>
             </td>
             <td>{{ $data->quantity ?? 0 }}</td>

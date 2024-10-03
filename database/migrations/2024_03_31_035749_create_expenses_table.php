@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->date('expense_date');
-            $table->unsignedBigInteger('expense_category_id')->unsigned();
+            $table->unsignedBigInteger('expense_category_id')->nullable();
             $table->foreign('expense_category_id')->references('id')->on('expense_categories')->onDelete('cascade');
             $table->string('purpose', 255);
             $table->decimal('amount');
