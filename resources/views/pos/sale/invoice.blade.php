@@ -216,19 +216,19 @@
                     </div>
                     <div class="container-fluid w-100 btn_group">
                         <!--Due payment--->
-                        @php
+                        {{-- @php
                             $transaction = App\Models\Transaction::where('customer_id', $customer->id)
                                 ->latest('created_at')
                                 ->first();
-                        @endphp
+                        @endphp --}}
                         {{-- @dd($transaction) --}}
-                        @if ($transaction && $transaction->particulars === 'Sale#' . $sale->id)
-                            {{-- <a class="btn btn-outline-primary float-left mt-4">Payment</a> --}}
+                        {{-- @if ($transaction && $transaction->particulars === 'Sale#' . $sale->id)
+                            
                             <a href="#" class="add_money_modal btn btn-outline-primary float-left mt-4"
                                 id="payment-btn" data-bs-toggle="modal" data-bs-target="#duePayment">
                                 Payment
                             </a>
-                        @endif
+                        @endif --}}
                         @if ($sale->returned == 0)
                             <a href="{{ route('return', $sale->id) }}" class="btn btn-outline-primary float-left mt-4">
                                 <i style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i> Return
@@ -267,7 +267,7 @@
 
     {{-- //Payment --}}
     <!-- Modal add Payment -->
-    <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
+    {{-- <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
@@ -280,7 +280,6 @@
                     <form id="addPaymentForm" class="addPaymentForm row" method="POST">
                         <input type="hidden" name="sale_id" id="sale_id" value="{{ $sale->id }}">
                         <input type="hidden" name="customer_id" id="customer_id" value="{{ $customer->id }}">
-                        <input type="hidden" name="transaction_id" id="transaction_id" value="{{ $transaction->id }}">
                         <div>
                             <label for="name" class="form-label">Due Amount : <span id="due-amount">
                                     {{ number_format($sale->due, 2) }}</span> ৳ </label> <br>
@@ -313,7 +312,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
     <script>
         function dueShow() {
             let dueAmountText = document.getElementById('due-amount').innerText.trim();

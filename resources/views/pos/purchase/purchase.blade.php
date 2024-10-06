@@ -87,6 +87,9 @@
                         <div class="mb-3">
                             <h6 class="card-title">Purchase Table</h6>
                         </div>
+                        <div class="mb-2">
+                            <p class="text-danger">Sell Price must be greater than Cost Price</p>
+                        </div>
 
                         <div id="" class="table-responsive">
                             <table class="table">
