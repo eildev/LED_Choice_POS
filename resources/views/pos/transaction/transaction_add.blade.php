@@ -224,16 +224,16 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
-                                        <div class="mb-3 form-valid-groups">
+                                    <div class="col-sm-6 d-none">
+                                        <div class="mb-3 form-valid-groups " >
                                             <label class="form-label">Account Type<span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select" data-width="100%" name="account_type"
                                                 id="account_type" aria-invalid="false">
                                                 <option selected disabled value="">Select Account Type</option>
-                                                <option value="supplier">Supplier</option>
-                                                <option value="customer">Customer</option>
-                                                <option id="otherId" value="other">Other</option>
+                                                {{-- <option value="supplier">Supplier</option>
+                                                <option value="customer">Customer</option> --}}
+                                                <option id="otherId" selected value="other">Other</option>
                                             </select>
                                         </div>
                                     </div><!-- Col -->
@@ -243,7 +243,7 @@
                                                     class="text-danger">*</span></label>
                                             <select class="form-select  bank_id" data-width="100%"
                                                 name="transaction_type" style="background: transparent"
-                                                id="transaction_type" aria-invalid="false" disabled>
+                                                id="transaction_type" aria-invalid="false">
                                                 <option selected="" disabled value="">Select Type</option>
                                                 <option value="receive">Cash Receive</option>
                                                 <option value="pay">Cash Payment</option>
@@ -253,7 +253,7 @@
 
                                     <div class="col-sm-6 d-none" id="investment-col">
                                         <div class="mb-3 form-valid-groups">
-                                            <label class="form-label">Investment <span
+                                            <label class="form-label">Purpose <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select" data-width="100%" name="type" id=""
                                                 aria-invalid="false">
@@ -264,7 +264,7 @@
                                             </select>
                                         </div>
                                     </div><!-- Col -->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="mb-3">
                                             <label class="form-label">Account Name<span
                                                     class="text-danger">*</span></label>
@@ -274,15 +274,16 @@
                                                 <option selected disabled value="">Select Account ID</option>
                                             </select>
                                         </div>
+
                                     </div><!-- Col -->
-                                    <div class="col-sm-6 d-none" id="investment-col2">
+
+                                    <div class="col-sm-2 " id="investment-col2">
                                         <div class="mb-3 form-valid-groups">
                                             <label class="form-label">Add New Investor</label><br>
                                             <a class="btn btn-primary ms-2"
                                                 data-bs-toggle="modal"data-bs-target="#investorModal">Add</a>
                                         </div>
                                     </div><!-- Col -->
-
                                     <div>
                                         <h5 style="display: none;" class="account-info" id="account-details"></h5>
                                         <h5 style="display: none;" class="account-info" id="due_invoice_count"></h5>
@@ -371,36 +372,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         $(document).ready(function() {
-            document.getElementById("account_type").addEventListener("change", function() {
-                let accountType = this.value;
-                let options = '<option selected disabled value="">Select Account ID</option>';
 
-                if (accountType === "supplier") {
-                    @foreach ($supplier as $supply)
-                        options += '<option  value="{{ $supply->id }}">{{ $supply->name }} </option>';
-                    @endforeach
-                    let transactionTypeElement = document.getElementById('transaction_type');
-                    transactionTypeElement.setAttribute('disabled', true);
-                    //
-                    let investmentCol = document.getElementById('investment-col');
-                    investmentCol.classList.add('d-none');
-                    let investmentCol2 = document.getElementById('investment-col2');
-                    investmentCol2.classList.add('d-none');
-                    //
-                } else if (accountType === "customer") {
-                    @foreach ($customer as $customers)
-                        options += '<option value="{{ $customers->id }}">{{ $customers->name }}</option>';
-                    @endforeach
-                    //
-                    let transactionTypeElement = document.getElementById('transaction_type');
-                    transactionTypeElement.setAttribute('disabled', true);
-                    //
-                    let investmentCol = document.getElementById('investment-col');
-                    investmentCol.classList.add('d-none');
-                    let investmentCol2 = document.getElementById('investment-col2');
-                    investmentCol2.classList.add('d-none');
-                    //
-                } else if (accountType === "other") {
                     viewInvestor();
                     //
                     let transactionTypeElement = document.getElementById('transaction_type');
@@ -411,20 +383,23 @@
                     investmentCol.classList.remove('d-none');
                     let investmentCol2 = document.getElementById('investment-col2');
                     investmentCol2.classList.remove('d-none');
-                    // hideFunction()
-                }
-                document.getElementById("account_id").innerHTML = options;
-            });
-            //
-            //called it if accountType == Other
-            // function hideFunction(){
-            //     $('.account-info').hide();
-            // }
-            $(document).on('change', '.select-account-id', function() {
-                let accountId = this.value;
-                console.log(accountId);
-                let account_type = document.querySelector('#account_type').value;
-                // $('.account-info').hide();
+
+                    $(document).on('change', '#transaction_type', function() {
+                    let transactionType = $(this).val();
+
+                    // Show account-info section if the selected option is "pay"
+                    if (transactionType === 'pay') {
+                        $('.account-info').show();
+                    } else {
+                        $('.account-info').hide();
+                    }
+                });
+                    $(document).on('change', '.select-account-id', function() {
+                        let accountId = this.value;
+                        // console.log(accountId);
+                        let transactionType = $('#transaction_type').val(); // Get the current transaction type
+                        let account_type = document.querySelector('#account_type').value;
+                        if (transactionType === 'pay') {
                 $.ajax({
                     url: '/getDataForAccountId',
                     method: 'GET',
@@ -448,6 +423,9 @@
                         console.error('Request failed:', error);
                     }
                 });
+            } else {
+                    $('.account-info').hide(); // Hide if not 'pay'
+                }
             })
 
             document.querySelector('#transactionfilter').addEventListener('click', function(e) {
@@ -547,16 +525,16 @@
         });
 
         ///
-        document.getElementById('account_type').addEventListener('change', function() {
-            var accountType = this.value;
-            var transactionType = document.getElementById('transaction_type');
-            if (accountType === 'customer') {
-                transactionType.value = 'receive';
-            }
-            if (accountType === 'supplier') {
-                transactionType.value = 'pay';
-            }
-        });
+        // document.getElementById('account_type').addEventListener('change', function() {
+        //     var accountType = this.value;
+        //     var transactionType = document.getElementById('transaction_type');
+        //     if (accountType === 'customer') {
+        //         transactionType.value = 'receive';
+        //     }
+        //     if (accountType === 'supplier') {
+        //         transactionType.value = 'pay';
+        //     }
+        // });
 
         //Add Investor
         function showError(name, message) {
