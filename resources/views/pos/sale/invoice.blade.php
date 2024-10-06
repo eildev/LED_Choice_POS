@@ -337,7 +337,7 @@
 
       const savePayment = document.getElementById('add_payment');
       savePayment.addEventListener('click', function(e) {
-        // console.log('Working on payment')
+
         e.preventDefault();
 
     let formData = new FormData($('.addPaymentForm')[0]);
@@ -347,7 +347,6 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-
     // AJAX request
     $.ajax({
         url: '/due/invoice/payment/transaction',
