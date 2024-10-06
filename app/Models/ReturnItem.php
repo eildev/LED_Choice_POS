@@ -14,7 +14,6 @@ class ReturnItem extends Model
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
-
     public function return()
     {
         return $this->belongsTo(Returns::class);

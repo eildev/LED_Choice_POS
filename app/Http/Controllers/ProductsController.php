@@ -161,30 +161,28 @@ class ProductsController extends Controller
     public function find($id)
     {
         $status = 'active';
-        $product = Product::findOrFail($id);
+        // Fetch product with its related unit
+        $product = Product::with('unit')->findOrFail($id);
+
+        // Check for active promotion details for the product
         $promotionDetails = PromotionDetails::whereHas('promotion', function ($query) use ($status) {
             return $query->where('status', '=', $status);
         })->where('promotion_type', 'products')->where('logic', 'like', '%' . $id . "%")->latest()->first();
-        // dd($promotionDetails->promotion);
-        $discountCheck = PosSetting::where('discount', '=', 1)->first();
 
+        // If promotion details exist, return them along with the product and unit
         if ($promotionDetails) {
-            if ($discountCheck) {
-                return response()->json([
-                    'status' => '200',
-                    'data' => $product,
-                ]);
-            } else {
-                return response()->json([
-                    'status' => '200',
-                    'data' => $product,
-                    'promotion' => $promotionDetails->promotion,
-                ]);
-            }
-        } else {
             return response()->json([
                 'status' => '200',
-                'data' => $product
+                'data' => $product,
+                'promotion' => $promotionDetails->promotion,
+                'unit' => $product->unit->name,  // Include unit in the response
+            ]);
+        } else {
+            // If no promotion details exist, still return the product with the unit
+            return response()->json([
+                'status' => '200',
+                'data' => $product,
+                'unit' => $product->unit->name,  // Include unit here as well
             ]);
         }
     }

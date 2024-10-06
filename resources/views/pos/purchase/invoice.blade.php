@@ -26,9 +26,11 @@
                             <p class="show_supplier_email">{{ $supplier->email ?? '' }}</p>
                             <p class="show_supplier_phone">{{ $supplier->phone ?? '' }}</p>
                             <p class="text-end mb-1 mt-5">Total </p>
-                            <h4 class="text-end fw-normal">৳ {{ $purchase->grand_total ?? 00.0 }}</h4>
+                            <h4 class="text-end fw-normal">৳
+                                {{ number_format($purchase->grand_total + ($purchase->carrying_cost > 0 ? $purchase->carrying_cost : 0), 2, '.', ',') }}
+                            </h4>
                             <h6 class="mb-0 mt-2 text-end fw-normal"><span class="text-muted show_purchase_date">Invoice
-                                    Date :</span> {{ $purchase->purchase_date ?? '' }}</h6>
+                                    Date :</span> {{ $purchase->purchse_date ?? '' }}</h6>
                         </div>
                     </div>
                     <div class="container-fluid mt-5 d-flex justify-content-center w-100">
@@ -50,38 +52,15 @@
                                                 <td class="text-start">{{ $index + 1 }}</td>
                                                 <td class="text-start">{{ $product->product->name }}</td>
                                                 <td>{{ $product->quantity }}</td>
-                                                <td>{{ $product->unit_price }}</td>
-                                                <td>{{ $product->total_price }}</td>
+                                                <td>{{ number_format($product->unit_price, 2) }}</td>
+                                                <td>{{ number_format($product->total_price, 2) }}</td>
                                             </tr>
                                         @endforeach
                                     @else
-                                        <tr class="text-end">
-                                            <td class="text-start">1</td>
-                                            <td class="text-start">PSD to html conversion</td>
-                                            <td>02</td>
-                                            <td>$55</td>
-                                            <td>$110</td>
-                                        </tr>
-                                        <tr class="text-end">
-                                            <td class="text-start">2</td>
-                                            <td class="text-start">Package design</td>
-                                            <td>08</td>
-                                            <td>$34</td>
-                                            <td>$272</td>
-                                        </tr>
-                                        <tr class="text-end">
-                                            <td class="text-start">3</td>
-                                            <td class="text-start">Html template development</td>
-                                            <td>03</td>
-                                            <td>$500</td>
-                                            <td>$1500</td>
-                                        </tr>
-                                        <tr class="text-end">
-                                            <td class="text-start">4</td>
-                                            <td class="text-start">Redesign</td>
-                                            <td>01</td>
-                                            <td>$30</td>
-                                            <td>$30</td>
+                                        <tr>
+                                            <td colspan="5">
+                                                No Data Found
+                                            </td>
                                         </tr>
                                     @endif
                                 </tbody>
@@ -96,59 +75,46 @@
                                         <tbody>
                                             <tr>
                                                 <td>Sub Total</td>
-                                                <td class="text-end">৳ {{ $purchase->total_amount }}</td>
+                                                <td class="text-end">৳ {{ number_format($purchase->total_amount, 2) }}</td>
                                             </tr>
-                                            @if ($purchase->discount != null)
-                                                @php
-                                                    $discount = App\Models\Promotion::findOrFail($purchase->discount);
-                                                @endphp
-                                                @if ($discount->discount_type == 'percentage')
-                                                    <tr>
-                                                        <td>Discount ({{ $discount->discount_value }} %)</td>
-                                                        <td class="text-end">৳ {{ $purchase->sub_total }}</td>
-                                                    </tr>
-                                                @else
-                                                    <tr>
-                                                        <td>Discount (৳ {{ $discount->discount_value }})</td>
-                                                        <td class="text-end">৳ {{ $purchase->sub_total }}</td>
-                                                    </tr>
-                                                @endif
-                                            @endif
-
-                                            @if ($purchase->tax != null)
-                                                <tr>
-                                                    <td>TAX ({{ $purchase->tax }}%)</td>
-                                                    <td class="text-end">৳ {{ $purchase->grand_total }} </td>
-                                                </tr>
-                                            @endif
                                             <tr>
-                                                <td class="text-bold-800">Previous Due</td>
-                                                <td class="text-bold-800 text-end">
-                                                    ৳{{ number_format($purchase->grand_total - $purchase->sub_total, 2) }}
+                                                <td>Previous Due</td>
+                                                <td class="text-end">৳
+                                                    {{ number_format(max(0, $purchase->grand_total - $purchase->total_amount), 2) }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td class="text-bold-800">Grand Total</td>
-                                                <td class="text-bold-800 text-end">৳ {{ $purchase->grand_total }} </td>
-                                            </tr>
-                                            @if ($purchase->grand_total <= $purchase->paid)
+
+                                            @if ($purchase->carrying_cost > 0)
                                                 <tr>
-                                                    <td>Payment Made</td>
-                                                    <td class="text-success text-end">৳ {{ $purchase->paid }} </td>
-                                                </tr>
-                                            @else
-                                                <tr>
-                                                    <td>Payment Made</td>
-                                                    <td class="text-danger text-end">(-) ৳ {{ $purchase->paid }} </td>
+                                                    <td>Carrying Cost</td>
+                                                    <td class="text-end">৳ {{ number_format($purchase->carrying_cost, 2) }}
+                                                    </td>
                                                 </tr>
                                             @endif
+
+                                            <tr>
+                                                <td class="text-bold-800">Grand Total</td>
+                                                <td class="text-bold-800 text-end">৳
+                                                    {{ number_format($purchase->grand_total + $purchase->carrying_cost, 2) }}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Payment Made</td>
+                                                <td
+                                                    class="text-end {{ $purchase->grand_total <= $purchase->paid ? 'text-success' : 'text-danger' }}">
+                                                    {{ $purchase->grand_total <= $purchase->paid ? '৳' : '(-) ৳' }}
+                                                    {{ number_format($purchase->paid + ($purchase->carrying_cost > 0 ? $purchase->carrying_cost : 0), 2) }}
+                                                </td>
+                                            </tr>
+
                                             @if ($purchase->due != 0)
                                                 <tr class="bg-dark">
                                                     <td class="text-bold-800">Balance Due</td>
-                                                    <td class="text-bold-800 text-end">৳ {{ $purchase->due }} </td>
+                                                    <td class="text-bold-800 text-end">৳
+                                                        {{ number_format($purchase->due, 2) }}</td>
                                                 </tr>
                                             @endif
-
                                         </tbody>
                                     </table>
                                 </div>

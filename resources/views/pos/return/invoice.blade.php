@@ -53,7 +53,6 @@
                                     Date :</span> {{ $return->created_at ?? '' }}</h6>
                         </div>
                     </div>
-
                     <div class="container-fluid mt-2 d-flex justify-content-center w-100">
                         <div class="w-100">
                             <table class="table table-bordered invoice_table_bg">
@@ -61,6 +60,7 @@
                                     <tr class="invoice_table_th_bg">
                                         <th>#</th>
                                         <th>Product Name</th>
+                                        <th>Return Reason</th>
                                         <th class="text-end">Unit cost</th>
                                         <th class="text-end">Quantity</th>
                                         <th class="text-end">Total</th>
@@ -73,20 +73,21 @@
                                             <tr class="text-end">
                                                 <td class="text-start">{{ $index + 1 }}</td>
                                                 <td class="text-start">{{ $item->product->name ?? '' }}</td>
+                                                <td class="text-start">{{ $item->return_reason ?? '' }}</td>
                                                 <td>{{ $item->return_price ?? 0 }}</td>
                                                 <td>{{ $item->quantity ?? 0 }}</td>
                                                 <td>{{ $item->product_total ?? 0 }}</td>
                                             </tr>
                                             @php $lastIndex = $index + 1; @endphp
                                         @endforeach
-                                        @for ($i = $lastIndex + 1; $i < 10; $i++)
+                                        @for ($i = $lastIndex + 1; $i < 5; $i++)
                                             <tr class="text-end">
                                                 <td class="text-start">{{ $i }}</td>
                                                 <td class="text-start"></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-
+                                                <td></td>
                                             </tr>
                                         @endfor
                                     @else
@@ -98,35 +99,173 @@
                             </table>
                         </div>
                     </div>
-
-                    <div class="container-fluid mt-2">
-                        <div class="row">
-                            <div class="col-md-6 ms-auto total_calculation">
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <tbody class="total_calculation_bg">
-                                            <tr>
-                                                <td>Product Total</td>
-                                                <td class="text-end">৳ {{ number_format($return->refund_amount, 2) }}</td>
-                                            </tr>
-                                        </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="container-fluid w-100 btn_group">
+                        <!--Print Invoice--->
+                        @if ($invoice_type == 'a4')
+                            <a href="#" class="btn btn-outline-primary float-end mt-4 me-3"
+                                onclick="window.print();"><i data-feather="printer" class="me-2 icon-md"></i>Print
+                                Invoice</a>
+                        @elseif($invoice_type == 'a5')
+                            <a href="#" class="btn btn-outline-primary float-end mt-4" onclick="window.print();"><i
+                                    data-feather="printer" class="me-2 icon-md"></i>Print Invoice</a>
+                        @else
+                            <a target="" href="#" class="btn btn-outline-primary float-end mt-4 "
+                                onclick="window.print();"><i data-feather="printer" class="me-2 icon-md"></i>Print
+                                Invoice</a>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-12">
             <div class="w-100 mx-auto btn_group">
-                <a href="{{ route('sale.view') }}" class="btn btn-primary  mt-4 ms-2"><i
-                        class="fa-solid fa-arrow-rotate-left me-2"></i>Manage Sale</a>
+                <a href="{{ route('return.products.list') }}" class="btn btn-primary  mt-4 ms-2"><i
+                        class="fa-solid fa-arrow-rotate-left me-2"></i>Manage Return</a>
                 <a href="{{ route('sale') }}" class="btn btn-outline-primary mt-4"><i data-feather="plus-circle"
                         class="me-2 icon-md"></i>Sale</a>
             </div>
         </div>
     </div>
 
+
+
+    <script>
+        function setPaperSize('$invoice_type') {
+            let styleElement = document.getElementById('print-style');
+
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = 'print-style';
+                document.head.appendChild(styleElement);
+            }
+
+            let sizeCss;
+
+            switch (size) {
+                case 'a4':
+                    sizeCss = '@page { size: A4; }';
+                    break;
+                case 'a5':
+                    sizeCss = '@page { size: A5; }';
+                    break;
+                case 'letter':
+                    sizeCss = '@page { size: letter; }';
+                    break;
+                case 'custom':
+                    sizeCss = '@page { size: 210mm 297mm; }'; // Example for A4 size in custom dimensions
+                    break;
+                default:
+                    sizeCss = '@page { size: auto; }'; // Default
+            }
+
+            styleElement.innerHTML = `
+                @media print {
+                    ${sizeCss}
+                }
+            `;
+        }
+    </script>
+
+    <style>
+        @media print {
+            .table> :not(caption)>*>* {
+                padding: 0px 10px !important;
+            }
+
+            .margin_left_m_14 {
+                margin-left: -14px;
+            }
+
+            .w_40 {
+                width: 250px !important;
+                text-wrap: wrap;
+            }
+
+            nav,
+            .footer {
+                display: none !important;
+            }
+
+            .page-content {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                min-height: 740px !important;
+                /* background-color: #eec6a1 !important; */
+                /* background-color: #cce9fa !important; */
+                background-color: #ffffff !important;
+                /* border: 1px solid #29ADF9; */
+            }
+
+            .btn_group {
+                display: none !important;
+            }
+
+            .total_calculation {
+                float: right !important;
+                /* margin-right: -40px; */
+                width: 50%;
+                color: #000
+            }
+
+            .card-body {
+                padding: 0px !important;
+                margin-left: 0px !important;
+            }
+
+            .card {
+                /* padding: 0px !important; */
+                /* margin: 0px !important; */
+            }
+
+            .main-wrapper .page-wrapper .page-content {
+                /* margin-left: -10px !important; */
+                padding: 0px;
+
+            }
+
+            .margin_left_m_14 {
+                margin-left: -14px;
+            }
+
+            .w_40 {
+                width: 240px !important;
+            }
+
+            /*.table> :not(caption)>*>* {*/
+            /*    padding: 0px 10px !important;*/
+            /*}*/
+
+            .invoice_bg {
+                background-color: #ffffff !important;
+                /* background-color: #cce9fa !important; */
+                /* background-color: #eec6a1 !important; */
+                color: #000 !important;
+                height: 740px;
+            }
+
+            .invoice_table_bg {
+                /* background-color: rgb(241, 204, 204) !important; */
+                color: #000000 !important;
+                border-color: #29ADF9;
+            }
+
+            .invoice_table_th_bg {
+                background-color: #29ADF9 !important;
+                color: #000000 !important;
+            }
+
+            .invoice_table_th_bg th {
+
+                color: #000000 !important;
+            }
+
+            .total_calculation_bg {
+                color: #000 !important;
+            }
+
+            .print_bg_white {
+                background-color: transparent !important;
+            }
+        }
+    </style>
 @endsection
