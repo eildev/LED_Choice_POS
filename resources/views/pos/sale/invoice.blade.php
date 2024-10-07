@@ -223,7 +223,7 @@
                         @endphp --}}
                         {{-- @dd($transaction) --}}
                         {{-- @if ($transaction && $transaction->particulars === 'Sale#' . $sale->id)
-                            
+
                             <a href="#" class="add_money_modal btn btn-outline-primary float-left mt-4"
                                 id="payment-btn" data-bs-toggle="modal" data-bs-target="#duePayment">
                                 Payment
