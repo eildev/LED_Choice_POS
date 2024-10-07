@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\Branch;
@@ -87,8 +88,9 @@ class CustomerController extends Controller
         $data = Customer::findOrFail($id);
         $transactions = Transaction::where('customer_id', $data->id)->get();
         $branch = Branch::findOrFail($data->branch_id);
+        $banks = Bank::latest()->get();
         $isCustomer = true;
 
-        return view('pos.customer.customer-profiling', compact('data', 'transactions', 'branch', 'isCustomer'));
+        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
     }
 }

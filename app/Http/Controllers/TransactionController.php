@@ -177,8 +177,8 @@ class TransactionController extends Controller
         //     ];
         //     return redirect()->back()->with($notification);
         // } else
-          if ($request->account_type == 'other') {
-        // dd($request->transaction_type);
+        if ($request->account_type == 'other') {
+            // dd($request->transaction_type);
             $tracsBalances = Transaction::where('others_id', $request->account_id)->latest()->first();
             $currentBalance = $tracsBalances->balance ?? 0;
             $oldBalance = AccountTransaction::where('account_id', $request->payment_method)->latest('created_at')->first();
@@ -354,53 +354,87 @@ class TransactionController extends Controller
         $investors = Investor::findOrFail($id);
         return view('pos.investor.investor-invoice', compact('investors'));
     }
+
+
     public function invoicePaymentStore(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'payment_balance' => 'required',
             'account' => 'required',
         ]);
 
         if ($validator->passes()) {
-            $sale = Sale::find($request->sale_id);
-            $sale->due = $sale->due - $request->payment_balance;
-            $sale->paid = $sale->paid + $request->payment_balance;
-            //Transaction Table
 
-            $tracsBalance = Transaction::findOrFail($request->transaction_id);
-
-            $tracsBalance->credit = $tracsBalance->credit + $request->payment_balance;
-            $tracsBalance->debit = $tracsBalance->debit + $request->payment_balance;
-            $transBalance = $tracsBalance->balance ?? 0;
-            $tracsBalance->balance = $transBalance + $request->payment_balance;
-            // dd($tracsBalance->balance);
-            $tracsBalance->save();
-            //Customer Table
-            $customer = Customer::findOrFail($request->customer_id);
-            $newBalance = $customer->wallet_balance - $request->payment_balance;
-            $newPayable = $customer->total_payable + $request->payment_balance;
-            $customer->update([
-                'wallet_balance' => $newBalance,
-                'total_payable' => $newPayable
-            ]);
-            $customer->save();
+            // transaction 
+            $transaction = new Transaction;
+            $transaction->branch_id = Auth::user()->branch_id;
+            $transaction->date = Carbon::now();
+            $transaction->payment_type = 'receive';
+            $transaction->payment_method = $request->account;
+            $transaction->credit = $request->payment_balance;
+            $transaction->debit = $request->due_amount;
+            $transaction->balance = $request->due_amount - $request->payment_balance ?? 0;
 
             //Account Transaction Table
             $accountTransaction = new AccountTransaction;
             $accountTransaction->branch_id =  Auth::user()->branch_id;
-            $accountTransaction->reference_id = $request->sale_id;
-            $accountTransaction->purpose =  'InvoicePayment';
             $accountTransaction->account_id =  $request->account;
-            $accountTransaction->credit = $request->payment_balance;
+
+
             $oldBalance = AccountTransaction::where('account_id', $request->account)->latest('created_at')->first();
-            if ($oldBalance) {
-                $accountTransaction->balance = $oldBalance->balance + $request->payment_balance;
+
+            if ($request->isCustomer == 1) {
+                // transaction 
+                $transaction->particulars = 'SaleDue';
+                $transaction->customer_id = $request->data_id;
+
+                //Customer Table
+                $customer = Customer::findOrFail($request->data_id);
+                $newBalance = $customer->wallet_balance - $request->payment_balance;
+                $newPayable = $customer->total_payable + $request->payment_balance;
+                $customer->update([
+                    'wallet_balance' => $newBalance,
+                    'total_payable' => $newPayable
+                ]);
+
+                $accountTransaction->purpose =  'SaleDue';
+                $accountTransaction->credit = $request->payment_balance;
+                if ($oldBalance) {
+                    $accountTransaction->balance = $oldBalance->balance + $request->payment_balance;
+                } else {
+                    $accountTransaction->balance = $request->payment_balance;
+                }
             } else {
-                $accountTransaction->balance = $request->payment_balance;
+                if ($oldBalance && $oldBalance->balance > 0 && $oldBalance->balance >= $request->payment_balance) {
+                    // transaction update 
+                    $transaction->particulars = 'PurchaseDue';
+                    $transaction->supplier_id = $request->data_id;
+
+
+                    // supplier Crud 
+                    $supplier = Supplier::findOrFail($request->data_id);
+                    $newBalance = $supplier->wallet_balance - $request->payment_balance;
+                    $newPayable = $supplier->total_payable + $request->payment_balance;
+                    $supplier->update([
+                        'wallet_balance' => $newBalance,
+                        'total_payable' => $newPayable
+                    ]);
+
+
+                    $accountTransaction->purpose =  'PurchaseDue';
+                    $accountTransaction->debit = $request->payment_balance;
+                    $accountTransaction->balance = $oldBalance->balance - $request->payment_balance;
+                } else {
+                    return response()->json([
+                        'status' => 400,
+                        'message' => 'Your account Balance is low Please Select Another account',
+                    ]);
+                }
             }
-            $accountTransaction->created_at = Carbon::now();
             $accountTransaction->save();
-            $sale->save();
+            $transaction->save();
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Successfully Payment',

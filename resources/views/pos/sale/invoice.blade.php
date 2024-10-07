@@ -1,68 +1,130 @@
 @extends('master')
 @section('admin')
-    @php
-        $branch = App\Models\Branch::findOrFail($sale->branch_id);
-        $customer = App\Models\Customer::findOrFail($sale->customer_id);
-        $products = App\Models\SaleItem::where('sale_id', $sale->id)->get();
-    @endphp
     <div class="row ">
         <div class="col-md-12 ">
             <div class="card border-0 shadow-none invoice_bg">
                 <div class="card-body ">
-                    <div class="container-fluid d-flex justify-content-between">
-                        <div class="col-lg-3 ps-0">
-                            @if (!empty($invoice_logo_type))
-                                @if ($invoice_logo_type == 'Name')
-                                    <a href="#" class="noble-ui-logo logo-light d-block mt-3">{{ $siteTitle }}</a>
-                                @elseif($invoice_logo_type == 'Logo')
-                                    @if (!empty($logo))
-                                        <img class="margin_left_m_14" height="100" width="200" src="{{ url($logo) }}"
-                                            alt="logo">
-                                    @else
-                                        <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
-                                    @endif
-                                @elseif($invoice_logo_type == 'Both')
-                                    @if (!empty($logo))
-                                        <img class="margin_left_m_14" height="90" width="150"
-                                            src="{{ url($logo) }}" alt="logo">
-                                    @endif
-                                    <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
-                                @endif
-                            @else
-                                <a href="#" class="noble-ui-logo logo-light d-block mt-3">EIL<span>POS</span></a>
-                            @endif
-                            <p class="show_branch_address w_40">{{ $address ?? 'Banasree' }}</p>
-                            <p class="show_branch_address">{{ $phone ?? '' }}, 01708008705, 01720389177</p>
-                            <p class="show_branch_address">{{ $email ?? '' }}</p>
-                            <!--<hr>-->
-                            <p class="mt-2 mb-1 show_supplier_name"><span>Customer Name:</span>
-                                <b>{{ $customer->name ?? '' }}</b>
-                            </p>
-                            @if ($customer->address)
-                                <p class="show_supplier_address"><span>Address:</span> {{ $customer->address ?? '' }}</p>
-                            @endif
-                            @if ($customer->email)
-                                <p class="show_supplier_email"><span>Email:</span> {{ $customer->email ?? '' }}</p>
-                            @endif
-                            <p class="show_supplier_phone"><span>Phone:</span> {{ $customer->phone ?? '' }}</p>
+                    <div class="container-fluid w-full">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-start text-capitalize">
+                                        <div class="text-start">
+                                            @if (!empty($invoice_logo_type))
+                                                @if ($invoice_logo_type == 'Name')
+                                                    <a href="#"
+                                                        class="noble-ui-logo logo-light d-block mt-3">{{ $siteTitle }}</a>
+                                                @elseif($invoice_logo_type == 'Logo')
+                                                    @if (!empty($logo))
+                                                        <img class="margin_left_m_14" height="100" width="200"
+                                                            src="{{ url($logo) }}" alt="logo">
+                                                    @else
+                                                        <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
+                                                    @endif
+                                                @elseif($invoice_logo_type == 'Both')
+                                                    @if (!empty($logo))
+                                                        <img class="margin_left_m_14" height="90" width="150"
+                                                            src="{{ url($logo) }}" alt="logo">
+                                                    @endif
+                                                    <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
+                                                @endif
+                                            @else
+                                                <a href="#"
+                                                    class="noble-ui-logo logo-light d-block mt-3">EIL<span>Electro</span></a>
+                                            @endif
+                                            <p class="show_branch_address w_40">{{ $address ?? 'Banasree' }}</p>
+                                            <p class="show_branch_address">{{ $phone ?? '' }}, 01708008705, 01720389177</p>
+                                            <p class="show_branch_address">{{ $email ?? '' }}</p>
+                                            <!--<hr>-->
+                                        </div>
+                                    </th>
+                                    <th class="text-start text-capitalize">
+                                        <div class="text-start">
+                                            <h6 class="mt-1 mb-1 show_branch_name"><b>Customer Information</b></h6>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-start text-capitalize">
+                                                            <span>Name</span>
+                                                        </th>
+                                                        <th class="px-2">:</th>
+                                                        <th class="text-end text-capitalize">
+                                                            <p
+                                                                class="mt-1
+                                                            mb-1 show_branch_name ">
+                                                                <b>{{ $customer->name ?? '' }}</b>
+                                                            </p>
+                                                        </th>
+                                                    </tr>
+                                                    @if ($customer->address)
+                                                        <tr>
+                                                            <th class="text-start text-capitalize">
+                                                                <span>Address</span>
+                                                            </th>
+                                                            <th class="px-2">:</th>
+                                                            <th class="text-end text-capitalize">
 
-                        </div>
-                        <div class="col-lg-3 pe-0 text-end">
-                            <h4 class="fw-bolder text-uppercase text-end mt-4 mb-2">invoice</h4>
-                            <h6 class="text-end mb-5 pb-4"># INV-{{ $sale->invoice_number ?? 0 }}</h6>
-                            @if ($sale->due > 0)
-                                <p class="text-end mb-1 mt-5">Due</p>
-                                <h4 class="text-end fw-normal text-danger">৳ {{ $sale->due ?? 00.0 }}</h4>
-                            @else
-                                <p class="text-end mb-1 mt-5">Total Paid</p>
-                                <h4 class="text-end fw-normal text-success">৳ {{ $sale->paid ?? 00.0 }}</h4>
-                            @endif
-                            <h6 class="mb-0 mt-2 text-end fw-normal"><span class="text-muted show_purchase_date">Invoice
-                                    Date :</span> {{ $sale->sale_date ?? '' }}</h6>
-                        </div>
+                                                                <p class="show_supplier_address">
+                                                                    {{ $customer->address ?? '' }}</p>
+
+                                                            </th>
+                                                        </tr>
+                                                    @endif
+                                                    @if ($customer->email)
+                                                        <tr>
+                                                            <th class="text-start text-capitalize">
+                                                                <span>Email</span>
+                                                            </th>
+                                                            <th class="px-2">:</th>
+                                                            <th class="text-end text-capitalize">
+                                                                <p class="show_supplier_email">
+                                                                    {{ $customer->email ?? '' }}</p>
+                                                            </th>
+                                                        </tr>
+                                                    @endif
+                                                    @if ($customer->phone)
+                                                        <tr>
+                                                            <th class="text-start text-capitalize">
+                                                                <span>Phone</span>
+                                                            </th>
+                                                            <th class="px-2">:</th>
+                                                            <th class="text-end text-capitalize">
+                                                                <p class="show_supplier_phone">
+                                                                    {{ $customer->phone ?? '' }}
+                                                                </p>
+                                                            </th>
+                                                        </tr>
+                                                    @endif
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </th>
+                                    <th class="text-end text-capitalize">
+                                        <div class="text-end">
+                                            <h4 class="fw-bolder text-uppercase text-end mb-2">invoice</h4>
+                                            <h6 class="text-end mb-5 pb-4"># INV-{{ $sale->invoice_number ?? 0 }}</h6>
+                                            @if ($sale->due > 0)
+                                                <p class="text-end mb-1 mt-3">Due</p>
+                                                <h4 class="text-end fw-normal text-danger">৳
+                                                    {{ $sale->due ?? 00.0 }}</h4>
+                                            @else
+                                                <p class="text-end mb-1 mt-5">Total Paid</p>
+                                                <h4 class="text-end fw-normal text-success">৳
+                                                    {{ $sale->paid ?? 00.0 }}
+                                                </h4>
+                                            @endif
+                                            <h6 class="mb-0 mt-2 text-end fw-normal">
+                                                <span class="text-muted show_purchase_date">Invoice
+                                                    Date :</span> {{ $sale->sale_date ?? '' }}
+                                            </h6>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
                     <img src="{{ asset('assets/images/stamp.png') }}" class="img-fluid stamp-image" alt="">
-                    <div class="container-fluid mt-2 d-flex justify-content-center w-100">
+                    <div class="container-fluid mt-4 d-flex justify-content-center w-100">
                         <div class="w-100">
                             {{-- @dd($products); --}}
 
@@ -215,20 +277,6 @@
                         </div>
                     </div>
                     <div class="container-fluid w-100 btn_group">
-                        <!--Due payment--->
-                        {{-- @php
-                            $transaction = App\Models\Transaction::where('customer_id', $customer->id)
-                                ->latest('created_at')
-                                ->first();
-                        @endphp --}}
-                        {{-- @dd($transaction) --}}
-                        {{-- @if ($transaction && $transaction->particulars === 'Sale#' . $sale->id)
-
-                            <a href="#" class="add_money_modal btn btn-outline-primary float-left mt-4"
-                                id="payment-btn" data-bs-toggle="modal" data-bs-target="#duePayment">
-                                Payment
-                            </a>
-                        @endif --}}
                         @if ($sale->returned == 0)
                             <a href="{{ route('return', $sale->id) }}" class="btn btn-outline-primary float-left mt-4">
                                 <i style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i> Return
@@ -251,7 +299,17 @@
                             </a>
                         @endif
                     </div>
-
+                    <div class="mt-5">
+                        <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
+                        <p class=""> {{ $authName->name ?? '' }}</p>
+                    </div>
+                    <div class="footer_invoice text-center">
+                        <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
+                                Limited.</a> All rights
+                            reserved. Powered by Eclipse Intellitech <a
+                                href="https://electro-pos.eclipseintellitech.com/login" target="_blank">EIL
+                                Electro</a> Software</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -264,130 +322,6 @@
             </div>
         </div>
     </div>
-
-    {{-- //Payment --}}
-    <!-- Modal add Payment -->
-    {{-- <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalScrollableTitle">Due Payment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <form id="addPaymentForm" class="addPaymentForm row" method="POST">
-                        <input type="hidden" name="sale_id" id="sale_id" value="{{ $sale->id }}">
-                        <input type="hidden" name="customer_id" id="customer_id" value="{{ $customer->id }}">
-                        <div>
-                            <label for="name" class="form-label">Due Amount : <span id="due-amount">
-                                    {{ number_format($sale->due, 2) }}</span> ৳ </label> <br>
-                            <label for="remaining" class="form-label">Remaining Due:
-                                <span class="text-danger" id="remaining-due"> {{ number_format($sale->due, 2) }} </span>৳
-                            </label>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Balance Amount <span
-                                    class="text-danger">*</span></label>
-                            <input type="number" class="form-control add_amount payment_balance" name="payment_balance"
-                                onkeyup="dueShow()" onkeydown="errorRemove(this);">
-                            <span class="text-danger payment_balance_error"></span>
-                        </div>
-
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Transaction Account <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-control account" name="account" id=""
-                                onkeyup="errorRemove(this);">
-                                <option value="{{ $transaction->bank->id }}">{{ $transaction->bank->name }}</option>
-                            </select>
-                            <span class="text-danger account_error"></span>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a type="button" class="btn btn-primary" id="add_payment">Payment</a>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
-    <script>
-        function dueShow() {
-            let dueAmountText = document.getElementById('due-amount').innerText.trim();
-            let dueAmount = parseFloat(dueAmountText.replace(/[^\d.-]/g, ''));
-
-            let paymentBalanceText = document.querySelector('.payment_balance').value.trim();
-            let paymentBalance = parseFloat(paymentBalanceText)
-
-            let remainingDue = dueAmount - (paymentBalance || 0);
-            document.getElementById('remaining-due').innerText = remainingDue.toFixed(2) ?? 0 + ' ৳';
-
-        }
-
-        function errorRemove(element) {
-            tag = element.tagName.toLowerCase();
-            if (element.value != '') {
-                // console.log('ok');
-                if (tag == 'select') {
-                    $(element).closest('.mb-3').find('.text-danger').hide();
-                } else {
-                    $(element).siblings('span').hide();
-                    $(element).css('border-color', 'green');
-                }
-            }
-        }
-
-        function showError(payment_balance, message) {
-            $(payment_balance).css('border-color', 'red');
-            $(payment_balance).focus();
-            $(`${payment_balance}_error`).show().text(message);
-        }
-
-        const savePayment = document.getElementById('add_payment');
-        savePayment.addEventListener('click', function(e) {
-            // console.log('Working on payment')
-            e.preventDefault();
-
-            let formData = new FormData($('.addPaymentForm')[0]);
-            // CSRF Token setup
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            // AJAX request
-            $.ajax({
-                url: '/due/invoice/payment/transaction',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(res) {
-                    if (res.status == 200) {
-                        // Hide the correct modal
-                        $('#duePayment').modal('hide');
-                        // Reset the form
-                        $('.addPaymentForm')[0].reset();
-                        toastr.success(res.message);
-                        window.location.reload();
-                    } else {
-                        if (res.error.payment_balance) {
-                            showError('.payment_balance', res.error.payment_balance);
-                        }
-                        if (res.error.account) {
-                            showError('.account', res.error.account);
-                        }
-                    }
-                },
-                error: function(err) {
-                    toastr.error('An error occurred, Empty Feild Required.');
-                }
-            });
-        });
-    </script>
 
     <script>
         function setPaperSize('$invoice_type') {
@@ -431,6 +365,10 @@
     <style>
         .table> :not(caption)>*>* {
             padding: 0px 10px !important;
+        }
+
+        .footer_invoice p {
+            font-size: 12px !important;
         }
 
         .margin_left_m_14 {
@@ -571,6 +509,10 @@
 
             .print_bg_white {
                 background-color: transparent !important;
+            }
+
+            .footer_invoice p {
+                font-size: 12px !important;
             }
         }
     </style>

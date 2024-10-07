@@ -57,7 +57,7 @@
 
 <!-- End layout styles -->
 
-<link rel="shortcut icon" href="{{ asset('assets') }}/images/favicon.png" />
+<link rel="shortcut icon" href="{{ asset('assets') }}/images/favicon.svg" />
 <style>
     .btn-rounded-primary {
         padding: 0.3rem;

@@ -40,7 +40,7 @@ class RouteServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $settings = PosSetting::first();
-                $siteTitle = $settings ? $settings->company : 'EIL POS || Eclipse Intellitech Limited POS Software';
+                $siteTitle = $settings ? $settings->company : 'EIL Electro || Eclipse Intellitech Limited POS Software';
                 $logo = $settings->logo;
                 $facebook = $settings->facebook;
                 $address = $settings->address;

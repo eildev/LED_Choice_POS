@@ -219,7 +219,11 @@
                                     const tr = document.createElement('tr');
                                     tr.innerHTML = `
                                         <td>${index + 1}</td>
-                                        <td>${supplier.name ?? ""}</td>
+                                        <td>
+                                            <a href="/supplier/profile/${supplier.id}" >
+                                                ${supplier.name ?? ""}
+                                            </a>
+                                        </td>
                                         <td>${supplier.phone ?? ""}</td>
                                         <td>
                                             <span style="color: ${supplier.wallet_balance > 0 ? 'red' : ''};">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountTransaction;
 use App\Models\ActualPayment;
+use App\Models\Branch;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Customer;
@@ -15,6 +16,7 @@ use App\Models\SaleItem;
 use App\Models\SubCategory;
 use App\Models\Transaction;
 use App\Models\Unit;
+use App\Models\User;
 use App\Models\ViaSale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -319,7 +321,12 @@ class SaleController extends Controller
     public function invoice($id)
     {
         $sale = Sale::findOrFail($id);
-        return view('pos.sale.invoice', compact('sale'));
+
+        $branch = Branch::findOrFail($sale->branch_id);
+        $customer = Customer::findOrFail($sale->customer_id);
+        $products = SaleItem::where('sale_id', $sale->id)->get();
+        $authName = User::findOrFail($sale->sale_by);
+        return view('pos.sale.invoice', compact('sale', 'customer', 'products', 'authName'));
     }
     public function print($id)
     {

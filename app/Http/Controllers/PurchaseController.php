@@ -71,7 +71,15 @@ class PurchaseController extends Controller
                 $purchase->purchase_date =  $purchaseDate;
                 $purchase->total_quantity =  $totalQty;
                 $purchase->total_amount =  $totalAmount;
-                $purchase->invoice = $request->invoice;
+                if ($request->invoice) {
+                    $purchase->invoice = $request->invoice;
+                } else {
+                    do {
+                        $invoice = rand(123456, 999999); // Generate a random number
+                        $existingInvoice = Purchase::where('invoice', $invoice)->first(); // Check if the random invoice exists
+                    } while ($existingInvoice); // Keep generating until a unique invoice number is found
+                    $purchase->invoice = $invoice;
+                }
                 $purchase->discount_amount = $request->discount_amount;
                 if ($request->carrying_cost > 0) {
                     $purchase->sub_total = $request->sub_total - $request->carrying_cost;
