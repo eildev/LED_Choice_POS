@@ -89,6 +89,6 @@ class CustomerController extends Controller
         $branch = Branch::findOrFail($data->branch_id);
         $isCustomer = true;
 
-        return view('pos.customer.customer-profiling', compact('data', 'transactions', 'branch', 'isCustomer'));
+        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer'));
     }
 }

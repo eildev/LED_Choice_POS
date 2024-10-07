@@ -181,6 +181,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplier/edit/{id}', 'edit')->name('supplier.edit');
         Route::post('/supplier/update/{id}', 'update')->name('supplier.update');
         Route::get('/supplier/destroy/{id}', 'destroy')->name('supplier.destroy');
+        // Supplier Profiling 
+        Route::get('/supplier/profile/{id}', 'SupplierProfile')->name('supplier.profile');
     });
     // Expense related route(n)
     Route::controller(ExpenseController::class)->group(function () {

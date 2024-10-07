@@ -12,8 +12,26 @@
                 <div class="card-body ">
                     <div class="container-fluid d-flex justify-content-between">
                         <div class="col-lg-3 ps-0">
-                            <a href="#" class="noble-ui-logo logo-light d-block mt-3">EIL<span>POS</span></a>
-                            <p class="mt-1 mb-1 show_branch_name"><b>{{ $branch->name ?? '' }}</b></p>
+                            @if (!empty($invoice_logo_type))
+                                @if ($invoice_logo_type == 'Name')
+                                    <a href="#" class="noble-ui-logo logo-light d-block mt-3">{{ $siteTitle }}</a>
+                                @elseif($invoice_logo_type == 'Logo')
+                                    @if (!empty($logo))
+                                        <img class="margin_left_m_14" height="100" width="200" src="{{ url($logo) }}"
+                                            alt="logo">
+                                    @else
+                                        <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
+                                    @endif
+                                @elseif($invoice_logo_type == 'Both')
+                                    @if (!empty($logo))
+                                        <img class="margin_left_m_14" height="90" width="150"
+                                            src="{{ url($logo) }}" alt="logo">
+                                    @endif
+                                    <p class="mt-1 mb-1 show_branch_name"><b>{{ $siteTitle }}</b></p>
+                                @endif
+                            @else
+                                <a href="#" class="noble-ui-logo logo-light d-block mt-3">EIL<span>POS</span></a>
+                            @endif
                             <p class="show_branch_address">{{ $branch->address ?? 'accordion ' }}</p>
                             <p class="show_branch_email">{{ $branch->email ?? '' }}</p>
                             <p class="show_branch_phone">{{ $branch->phone ?? '' }}</p>
