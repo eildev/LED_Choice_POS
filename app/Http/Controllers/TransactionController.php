@@ -354,6 +354,8 @@ class TransactionController extends Controller
         $investors = Investor::findOrFail($id);
         return view('pos.investor.investor-invoice', compact('investors'));
     }
+
+
     public function invoicePaymentStore(Request $request)
     {
         // dd($request->all());
