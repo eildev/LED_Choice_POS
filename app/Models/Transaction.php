@@ -26,4 +26,28 @@ class Transaction extends Model
         return $this->belongsTo(Investor::class, 'others_id', 'id');
     } //
 
+    public function particularData()
+    {
+        $particulars = $this->particulars;
+
+        // Check if particulars start with 'Sale#'
+        if (strpos($particulars, 'Sale#') !== false) {
+            preg_match('/\d+/', $particulars, $matches); // Extract the ID
+            $saleId = $matches[0] ?? null;
+            return $saleId ? Sale::find($saleId) : null; // Return sale data
+
+            // Check if particulars start with 'Purchase#'
+        } elseif (strpos($particulars, 'Purchase#') !== false) {
+            preg_match('/\d+/', $particulars, $matches); // Extract the ID
+            $purchaseId = $matches[0] ?? null;
+            return $purchaseId ? Purchase::find($purchaseId) : null; // Return purchase data
+
+            // Check for specific cases like 'Adjust Due Collection' or 'Return'
+        } elseif (strpos($particulars, 'Adjust Due Collection') !== false || strpos($particulars, 'Return') !== false) {
+            return Returns::find($this->others_id); // Match with others_id and return return data
+        }
+
+        // Default case: return null if no match
+        return null;
+    }
 }

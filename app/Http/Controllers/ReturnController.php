@@ -182,9 +182,11 @@ class ReturnController extends Controller
                         $accountTransaction->balance = $lastTransaction->balance + $request->refund_amount;
 
                         $transaction->particulars = 'Adjust Due Collection';
+                        $transaction->customer_id = $customer->id;
                         $transaction->payment_type = 'receive';
                         $transaction->credit = $request->refund_amount;
-                        $transaction->balance = $lastTransactionData->balance + $request->refund_amount;
+                        $transaction->debit = $request->refund_amount;
+                        $transaction->balance = $request->refund_amount - $request->refund_amount;
                     } else {
                         $returnBalance = $request->refund_amount - $customerDue;
 
@@ -195,9 +197,11 @@ class ReturnController extends Controller
                         $accountTransaction->balance = $lastTransaction->balance - $returnBalance;
 
                         $transaction->particulars = 'Return';
+                        $transaction->customer_id = $customer->id;
                         $transaction->payment_type = 'pay';
+                        $transaction->credit = $returnBalance;
                         $transaction->debit = $returnBalance;
-                        $transaction->balance = $lastTransactionData->balance - $returnBalance;
+                        $transaction->balance = $returnBalance - $returnBalance;
                     }
                 } else {
                     $accountTransaction->purpose =  'Return';
@@ -205,9 +209,11 @@ class ReturnController extends Controller
                     $accountTransaction->balance = $lastTransaction->balance - $request->refund_amount;
 
                     $transaction->particulars = 'Return';
+                    $transaction->customer_id = $customer->id;
                     $transaction->payment_type = 'pay';
+                    $transaction->credit = $request->refund_amount;
                     $transaction->debit = $request->refund_amount;
-                    $transaction->balance = $lastTransactionData->balance - $request->refund_amount;
+                    $transaction->balance = $request->refund_amount - $request->refund_amount;
                 }
                 $customer->save();
                 $accountTransaction->save();

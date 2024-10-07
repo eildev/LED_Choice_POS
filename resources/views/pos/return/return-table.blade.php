@@ -9,7 +9,11 @@
 
             </td>
             <td>
-                {{ $data->customer->name ?? 0 }}
+                {{-- {{ $data->customer->id ?? '' }} --}}
+                <a href="{{ route('customer.profile', $data->customer->id ?? 0) }}">
+                    {{ $data->customer->name ?? '' }}
+                </a>
+
             </td>
             <td>
                 <ul>

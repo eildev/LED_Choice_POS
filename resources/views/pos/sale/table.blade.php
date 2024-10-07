@@ -7,7 +7,11 @@
                     #{{ $data->invoice_number ?? 0 }}
                 </a>
             </td>
-            <td>{{ $data->customer->name ?? '' }}</td>
+            <td>
+                <a href="{{ route('customer.profile', $data->customer->id) }}">
+                    {{ $data->customer->name ?? '' }}
+                </a>
+            </td>
             <td>
                 @php
                     $totalItems = $data->saleItem->count();
@@ -93,8 +97,6 @@
                             <a class="dropdown-item" href="{{ route('sale.invoice', $data->id) }}"><i
                                     class="fa-solid fa-file-invoice me-2"></i> Invoice</a>
                         @endif
-                        <a class="dropdown-item " href="{{ route('sale.view.details', $data->id) }}"><i
-                                class="fa-solid fa-eye me-2"></i> Show</a>
                         @if ($data->returned == 0)
                             <a class="dropdown-item" href="{{ route('return', $data->id) }}"><i
                                     style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i></i>

@@ -116,6 +116,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/edit/{id}', 'CustomerEdit')->name('customer.edit');
         Route::post('/customer/update/{id}', 'CustomerUpdate')->name('customer.update');
         Route::get('/customer/delete/{id}', 'CustomerDelete')->name('customer.delete');
+        // customer profiling 
+        Route::get('/customer/profile/{id}', 'CustomerProfile')->name('customer.profile');
     });
 
     // Unit related route
