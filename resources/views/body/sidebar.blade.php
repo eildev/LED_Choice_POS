@@ -1,11 +1,12 @@
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="{{ route('dashboard') }}" class="sidebar-brand">
+        {{-- <a href="{{ route('dashboard') }}" class="sidebar-brand">
             @if (!empty($logo))
                 <img src="{{ asset('/') . $logo }}" alt="" height="40">
             @else
                 EIL<span>POS</span>
-            @endif
+            @endif --}}
+            <img src="{{ asset('/Logo-2.png') }}" alt="" height="40">
         </a>
         <div class="sidebar-toggler not-active">
             <span></span>
