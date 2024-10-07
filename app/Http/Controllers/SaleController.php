@@ -16,6 +16,7 @@ use App\Models\SaleItem;
 use App\Models\SubCategory;
 use App\Models\Transaction;
 use App\Models\Unit;
+use App\Models\User;
 use App\Models\ViaSale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -324,7 +325,7 @@ class SaleController extends Controller
         $branch = Branch::findOrFail($sale->branch_id);
         $customer = Customer::findOrFail($sale->customer_id);
         $products = SaleItem::where('sale_id', $sale->id)->get();
-        $authName = Auth::user()->name;
+        $authName = User::findOrFail($sale->sale_by);
         return view('pos.sale.invoice', compact('sale', 'customer', 'products', 'authName'));
     }
     public function print($id)

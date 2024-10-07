@@ -5,7 +5,11 @@
             <td>
                 <a href="{{ route('purchase.invoice', $data->id) }}">#{{ $data->invoice ?? $data->id }}</a>
             </td>
-            <td>{{ $data->supplier->name ?? '' }}</td>
+            <td>
+                <a href="{{ route('supplier.profile', $data->supplier->id) }}">
+                    {{ $data->supplier->name ?? '' }}
+                </a>
+            </td>
             <td>{{ $data->purchse_date ?? 0 }}</td>
             <td>
                 @php

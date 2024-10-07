@@ -300,9 +300,9 @@
                             </a>
                         @endif
                     </div>
-                    <div>
+                    <div class="mt-5">
                         <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
-                        <p class=""> {{ $authName }}</p>
+                        <p class=""> {{ $authName->name ?? '' }}</p>
                     </div>
                     <div class="footer_invoice text-center">
                         <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
@@ -323,130 +323,6 @@
             </div>
         </div>
     </div>
-
-    {{-- //Payment --}}
-    <!-- Modal add Payment -->
-    {{-- <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalScrollableTitle">Due Payment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <form id="addPaymentForm" class="addPaymentForm row" method="POST">
-                        <input type="hidden" name="sale_id" id="sale_id" value="{{ $sale->id }}">
-                        <input type="hidden" name="customer_id" id="customer_id" value="{{ $customer->id }}">
-                        <div>
-                            <label for="name" class="form-label">Due Amount : <span id="due-amount">
-                                    {{ number_format($sale->due, 2) }}</span> ৳ </label> <br>
-                            <label for="remaining" class="form-label">Remaining Due:
-                                <span class="text-danger" id="remaining-due"> {{ number_format($sale->due, 2) }} </span>৳
-                            </label>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Balance Amount <span
-                                    class="text-danger">*</span></label>
-                            <input type="number" class="form-control add_amount payment_balance" name="payment_balance"
-                                onkeyup="dueShow()" onkeydown="errorRemove(this);">
-                            <span class="text-danger payment_balance_error"></span>
-                        </div>
-
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Transaction Account <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-control account" name="account" id=""
-                                onkeyup="errorRemove(this);">
-                                <option value="{{ $transaction->bank->id }}">{{ $transaction->bank->name }}</option>
-                            </select>
-                            <span class="text-danger account_error"></span>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a type="button" class="btn btn-primary" id="add_payment">Payment</a>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div> --}}
-    <script>
-        function dueShow() {
-            let dueAmountText = document.getElementById('due-amount').innerText.trim();
-            let dueAmount = parseFloat(dueAmountText.replace(/[^\d.-]/g, ''));
-
-            let paymentBalanceText = document.querySelector('.payment_balance').value.trim();
-            let paymentBalance = parseFloat(paymentBalanceText)
-
-            let remainingDue = dueAmount - (paymentBalance || 0);
-            document.getElementById('remaining-due').innerText = remainingDue.toFixed(2) ?? 0 + ' ৳';
-
-        }
-
-        function errorRemove(element) {
-            tag = element.tagName.toLowerCase();
-            if (element.value != '') {
-                // console.log('ok');
-                if (tag == 'select') {
-                    $(element).closest('.mb-3').find('.text-danger').hide();
-                } else {
-                    $(element).siblings('span').hide();
-                    $(element).css('border-color', 'green');
-                }
-            }
-        }
-
-        function showError(payment_balance, message) {
-            $(payment_balance).css('border-color', 'red');
-            $(payment_balance).focus();
-            $(`${payment_balance}_error`).show().text(message);
-        }
-
-        const savePayment = document.getElementById('add_payment');
-        savePayment.addEventListener('click', function(e) {
-            // console.log('Working on payment')
-            e.preventDefault();
-
-            let formData = new FormData($('.addPaymentForm')[0]);
-            // CSRF Token setup
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            // AJAX request
-            $.ajax({
-                url: '/due/invoice/payment/transaction',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(res) {
-                    if (res.status == 200) {
-                        // Hide the correct modal
-                        $('#duePayment').modal('hide');
-                        // Reset the form
-                        $('.addPaymentForm')[0].reset();
-                        toastr.success(res.message);
-                        window.location.reload();
-                    } else {
-                        if (res.error.payment_balance) {
-                            showError('.payment_balance', res.error.payment_balance);
-                        }
-                        if (res.error.account) {
-                            showError('.account', res.error.account);
-                        }
-                    }
-                },
-                error: function(err) {
-                    toastr.error('An error occurred, Empty Feild Required.');
-                }
-            });
-        });
-    </script>
 
     <script>
         function setPaperSize('$invoice_type') {

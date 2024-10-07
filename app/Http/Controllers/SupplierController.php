@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Transaction;
@@ -115,8 +116,9 @@ class SupplierController extends Controller
         $data = Supplier::findOrFail($id);
         $transactions = Transaction::where('supplier_id', $data->id)->get();
         $branch = Branch::findOrFail($data->branch_id);
+        $banks = Bank::latest()->get();
         $isCustomer = false;
 
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer'));
+        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
     }
 }
