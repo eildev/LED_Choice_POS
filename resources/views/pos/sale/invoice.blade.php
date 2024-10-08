@@ -277,7 +277,6 @@
                         </div>
                     </div>
                     <div class="container-fluid w-100 btn_group">
-
                         @if ($sale->returned == 0)
                             <a href="{{ route('return', $sale->id) }}" class="btn btn-outline-primary float-left mt-4">
                                 <i style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i> Return
