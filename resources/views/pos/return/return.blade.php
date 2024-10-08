@@ -134,7 +134,6 @@
                         <div class="col-sm-6">
                             <label class="form-label">Adjus Due</label>
                             <select class="form-select adjust_due">
-                                <option selected disabled>Please Select Adjust Due</option>
                                 <option value="yes">Yes</option>
                                 <option value="no">No</option>
                             </select>

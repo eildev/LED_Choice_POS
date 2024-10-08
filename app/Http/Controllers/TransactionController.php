@@ -373,8 +373,8 @@ class TransactionController extends Controller
             $transaction->payment_type = 'receive';
             $transaction->payment_method = $request->account;
             $transaction->credit = $request->payment_balance;
-            $transaction->debit = $request->due_amount;
-            $transaction->balance = $request->due_amount - $request->payment_balance ?? 0;
+            $transaction->debit = 0;
+            $transaction->balance = $transaction->debit - $transaction->credit ?? 0;
 
             //Account Transaction Table
             $accountTransaction = new AccountTransaction;

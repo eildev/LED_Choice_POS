@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('debit', 12, 2)->nullable();
             $table->decimal('credit', 12, 2)->nullable();
             $table->decimal('balance', 14, 2);
-            $table->integer('payment_method');
+            $table->integer('payment_method')->nullable();
             $table->string('note')->nullable();
             $table->timestamps();
         });

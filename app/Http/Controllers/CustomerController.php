@@ -36,6 +36,21 @@ class CustomerController extends Controller
         $customer->total_receivable = $request->wallet_balance ?? 0;
         $customer->created_at = Carbon::now();
         $customer->save();
+
+        if ($request->wallet_balance > 0) {
+            $transaction = new Transaction;
+            $transaction->branch_id = Auth::user()->branch_id;
+            $transaction->date = Carbon::now();
+            $transaction->particulars = 'Customer Due';
+            $transaction->payment_type = 'receive';
+            $transaction->customer_id = $customer->id;
+            $transaction->credit = 0;
+            $transaction->debit = $request->wallet_balance;
+            $transaction->balance = $request->wallet_balance ?? 0;
+            $transaction->save();
+        }
+
+
         $notification = array(
             'message' => 'Customer Created Successfully',
             'alert-type' => 'info'

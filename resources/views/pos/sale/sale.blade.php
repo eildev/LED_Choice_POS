@@ -19,7 +19,10 @@
                             </div>
                         @endif
 
-                        <div class="mb-2 col-md-6">
+                        <div
+                            class="mb-2 @if ($barcode == 1) col-md-6
+                        @else
+                        col-md-4 @endif">
                             <label for="date" class="form-label">Date</label>
                             <div class="input-group flatpickr me-2 mb-2 mb-md-0" id="dashboardDate">
                                 <span class="input-group-text input-group-addon bg-transparent border-primary"
@@ -30,30 +33,44 @@
                             </div>
                             <span class="text-danger purchase_date_error"></span>
                         </div>
-                        <div class="mb-1 col-md-6">
+                        <div
+                            class="mb-1 @if ($barcode == 1) col-md-6
+                        @else
+                        col-md-4 @endif">
                             <label class="form-label">Product</label>
-                            <div class="d-flex g-3">
-                                <select class="js-example-basic-single form-select product_select view_product"
-                                    data-width="100%" onchange="errorRemove(this);">
+                            <div class="row mx-1">
+                                <div class="@if ($via_sale == 1) col-md-9 @else col-md-12 @endif p-0">
+                                    <select class="js-example-basic-single form-select product_select view_product"
+                                        data-width="100%" onchange="errorRemove(this);">
 
-                                </select>
-                                <span class="text-danger product_select_error"></span>
+                                    </select>
+                                    <span class="text-danger product_select_error"></span>
+                                </div>
                                 @if ($via_sale == 1)
-                                    <button class="btn btn-primary ms-2 w-25" data-bs-toggle="modal"
-                                        data-bs-target="#viaSellModal">Via Sell</button>
+                                    <div class="@if ($via_sale == 1) col-md-3 @endif p-0">
+                                        <button class="btn btn-primary mx-2 via_sell_btn w-100 h-100" data-bs-toggle="modal"
+                                            data-bs-target="#viaSellModal">Via Sell</button>
+                                    </div>
                                 @endif
                             </div>
                         </div>
-                        <div class="mb-1 col-md-6">
+                        <div
+                            class="mb-1 @if ($barcode == 1) col-md-6
+                        @else
+                        col-md-4 @endif">
                             <label for="password" class="form-label">Customer</label>
-                            <div class="d-flex g-3">
-                                <select class="js-example-basic-single form-select select-customer" data-width="100%"
-                                    onchange="errorRemove(this);">
+                            <div class="row mx-1">
+                                <div class="col-md-9 p-0">
+                                    <select class="js-example-basic-single form-select select-customer" data-width="100%"
+                                        onchange="errorRemove(this);">
 
-                                </select>
-                                <span class="text-danger select-customer_error"></span>
-                                <button class="btn btn-primary ms-2" data-bs-toggle="modal"
-                                    data-bs-target="#customerModal">Add</button>
+                                    </select>
+                                    <span class="text-danger select-customer_error"></span>
+                                </div>
+                                <div class="col-md-3 p-0">
+                                    <button class="btn btn-sm btn-primary ms-2 via_sell_btn w-100 h-100"
+                                        data-bs-toggle="modal" data-bs-target="#customerModal">Add</button>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -382,6 +399,12 @@
         </div>
     </div>
 
+    <style>
+        .via_sell_btn {
+            font-size: 12px !important;
+        }
+    </style>
+
     <script>
         // error remove
         function errorRemove(element) {
@@ -405,6 +428,8 @@
                 $(this).closest('div').next('.Warranty_duration').hide();
             }
         });
+
+
 
         //  jquery redy function
         $(document).ready(function() {
@@ -551,6 +576,9 @@
                         $('.select-customer').empty();
                         // Append the disabled "Select Product" option
                         if (customers.length > 0) {
+                            $('.select-customer').append(
+                                `<option selected disabled>Select Customer</option>`
+                            );
                             $.each(customers, function(index, customer) {
                                 $('.select-customer').append(
                                     `<option value="${customer.id}">${customer.name}(${customer.phone})</option>`
@@ -661,7 +689,7 @@
                                         <option value="5 Year">5 Year</option>
                                         <option selected disabled>No Warranty</option>
                                     </select>
-                                    <span class="text-danger product_select_error"></span>
+                                    <span class="text-danger"></span>
                                 </div>
                             </td>
                             <td style="padding-top: 20px;">
@@ -673,7 +701,7 @@
                                                 `<span class="discount_amount${product.id} mt-2">${promotion.discount_value}</span>Tk`
                                         : `<span class="mt-2">00</span>`
                                     : `<input type="number" product-id="${product.id}" class="form-control product_discount${product.id} discountProduct" name="product_discount"  value="" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
                                 }
                             </td>
                             <td>
@@ -875,21 +903,26 @@
             // Select product
             $('.product_select').change(function() {
                 let id = $(this).val();
-                // console.log(id);
-                if ($(`.data_row${id}`).length === 0 && id) {
-                    $.ajax({
-                        url: '/product/find/' + id,
-                        type: 'GET',
-                        dataType: 'JSON',
-                        success: function(res) {
-                            const product = res.data;
-                            const promotion = res.promotion;
-                            showAddProduct(product, 1, promotion);
-                            updateGrandTotal();
-                            calculateCustomerDue();
-                        }
-                    });
+                let customer_id = $('.select-customer').val();
+                if (customer_id != null) {
+                    if ($(`.data_row${id}`).length === 0 && id) {
+                        $.ajax({
+                            url: '/product/find/' + id,
+                            type: 'GET',
+                            dataType: 'JSON',
+                            success: function(res) {
+                                const product = res.data;
+                                const promotion = res.promotion;
+                                showAddProduct(product, 1, promotion);
+                                updateGrandTotal();
+                                calculateCustomerDue();
+                            }
+                        });
+                    }
+                } else {
+                    toastr.warning('Please select a Customer');
                 }
+
             });
 
             // Purchase delete

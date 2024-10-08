@@ -55,13 +55,25 @@ class SaleController extends Controller
             $customer->phone = $request->phone;
             $customer->email = $request->email;
             $customer->address = $request->address;
-            $customer->opening_receivable = $request->opening_receivable ?? 0;
-            $customer->opening_payable = $request->opening_payable ?? 0;
-            $customer->wallet_balance =  $request->wallet_balance ?? 0;
-            $customer->total_receivable = $request->total_receivable ?? 0;
-            $customer->total_payable = $request->total_payable ?? 0;
+            $customer->opening_payable = $request->wallet_balance ?? 0;
+            $customer->wallet_balance = $request->wallet_balance ?? 0;
+            $customer->total_receivable = $request->wallet_balance ?? 0;
             $customer->created_at = Carbon::now();
             $customer->save();
+
+            if ($request->wallet_balance > 0) {
+                $transaction = new Transaction;
+                $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->date = Carbon::now();
+                $transaction->payment_type = 'receive';
+                $transaction->customer_id = $customer->id;
+                $transaction->credit = 0;
+                $transaction->debit = $request->wallet_balance;
+                $transaction->balance = $request->wallet_balance ?? 0;
+                $transaction->save();
+            }
+
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Successfully Save',
@@ -285,24 +297,15 @@ class SaleController extends Controller
             $accountTransaction->created_at = Carbon::now();
             $accountTransaction->save();
 
-            $lastTransaction = Transaction::where('customer_id', $request->customer_id)->latest()->first();
             $transaction = new Transaction;
             $transaction->date =  $request->sale_date;
             $transaction->payment_type = 'receive';
             $transaction->particulars = 'Sale#' . $saleId;
             $transaction->customer_id = $request->customer_id;
             $transaction->payment_method = $request->payment_method;
-            if ($lastTransaction) {
-                // Update existing transaction
-                $transaction->credit = $transaction->credit + $request->total;
-                $transaction->debit = $transaction->debit + $request->paid;
-                $transaction->balance = $lastTransaction->balance - ($request->total - $request->paid);
-            } else {
-                // Create new transaction
-                $transaction->credit = $request->total;
-                $transaction->debit = $request->paid;
-                $transaction->balance = $request->total - $request->paid;
-            }
+            $transaction->credit = $request->paid;
+            $transaction->debit = $request->total;
+            $transaction->balance = $request->total - $request->paid;
             $transaction->branch_id =  Auth::user()->branch_id;
             $transaction->save();
 

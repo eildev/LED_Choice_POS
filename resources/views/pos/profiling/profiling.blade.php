@@ -19,7 +19,7 @@
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
             <div class="card border-0 shadow-none">
-                <div class="card-body ">
+                <div class="card-body">
                     <div class="container-fluid d-flex justify-content-between">
                         <div class="col-lg-3 ps-0">
                             @if (!empty($invoice_logo_type))
@@ -62,9 +62,7 @@
                                 Print
                             </button>
                         </div>
-
                     </div>
-
                 </div>
                 <div class="card-body show_ledger">
                     <div class="container-fluid w-100">
@@ -118,7 +116,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
-                                                <th>Invoice</th>
+                                                <th class="id">Invoice</th>
                                                 <th>Particulars</th>
                                                 <th>Debit</th>
                                                 <th>Credit</th>
@@ -136,8 +134,9 @@
 
                                                 @foreach ($transactions as $transaction)
                                                     <tr>
-                                                        <td>{{ $transaction->date ?? '' }}</td>
-                                                        <td>
+                                                        <td>{{ \Carbon\Carbon::parse($transaction->date)->format('F j, Y') ?? '' }}
+                                                        </td>
+                                                        <td class="id">
                                                             @php
                                                                 $particularData = $transaction->particularData();
                                                             @endphp
@@ -217,7 +216,7 @@
                                                     @endphp
                                                 @endforeach
                                                 <tr>
-                                                    <td></td>
+                                                    <td class="id"></td>
                                                     <td></td>
                                                     <td>Total</td>
                                                     <td>৳ {{ number_format($totalDebit, 2) }}</td>
@@ -227,7 +226,7 @@
                                                 </tr>
                                             @else
                                                 <tr>
-                                                    <td colspan="7">No Data Found</td>
+                                                    <td colspan="7" class="text-center">No Data Found</td>
                                                 </tr>
                                             @endif
                                         </tbody>
@@ -302,12 +301,33 @@
             padding: 0px 10px !important;
         }
 
+        .margin_left_m_14 {
+            margin-left: -14px;
+        }
+
+        .w_40 {
+            width: 250px !important;
+            text-wrap: wrap;
+        }
 
         @media print {
             .page-content {
                 margin-top: 0 !important;
                 padding-top: 0 !important;
-                width: 100% !important;
+                min-height: 740px !important;
+                background-color: #ffffff !important;
+            }
+
+            .grid-margin,
+            .card,
+            .card-body,
+            table {
+                background-color: #ffffff !important;
+                color: #000 !important;
+            }
+
+            .footer_invoice p {
+                font-size: 12px !important;
             }
 
             button,
@@ -320,10 +340,6 @@
             .dataTables_length,
             .dataTables_info {
                 display: none !important;
-            }
-
-            table {
-                padding-right: 50px !important;
             }
         }
     </style>
