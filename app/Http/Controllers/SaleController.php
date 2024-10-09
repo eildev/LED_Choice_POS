@@ -66,6 +66,7 @@ class SaleController extends Controller
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->date = Carbon::now();
                 $transaction->payment_type = 'receive';
+                $transaction->particulars = 'Opening Due';
                 $transaction->customer_id = $customer->id;
                 $transaction->credit = 0;
                 $transaction->debit = $request->wallet_balance;

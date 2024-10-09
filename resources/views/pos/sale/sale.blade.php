@@ -22,7 +22,7 @@
                         <div
                             class="mb-2 @if ($barcode == 1) col-md-6
                         @else
-                        col-md-4 @endif">
+                        col-md-2 @endif">
                             <label for="date" class="form-label">Date</label>
                             <div class="input-group flatpickr me-2 mb-2 mb-md-0" id="dashboardDate">
                                 <span class="input-group-text input-group-addon bg-transparent border-primary"
@@ -36,7 +36,7 @@
                         <div
                             class="mb-1 @if ($barcode == 1) col-md-6
                         @else
-                        col-md-4 @endif">
+                        col-md-5 @endif">
                             <label class="form-label">Product</label>
                             <div class="row mx-1">
                                 <div class="@if ($via_sale == 1) col-md-9 @else col-md-12 @endif p-0">
@@ -57,7 +57,7 @@
                         <div
                             class="mb-1 @if ($barcode == 1) col-md-6
                         @else
-                        col-md-4 @endif">
+                        col-md-5 @endif">
                             <label for="password" class="form-label">Customer</label>
                             <div class="row mx-1">
                                 <div class="col-md-9 p-0">
@@ -701,7 +701,7 @@
                                                 `<span class="discount_amount${product.id} mt-2">${promotion.discount_value}</span>Tk`
                                         : `<span class="mt-2">00</span>`
                                     : `<input type="number" product-id="${product.id}" class="form-control product_discount${product.id} discountProduct" name="product_discount"  value="" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
                                 }
                             </td>
                             <td>

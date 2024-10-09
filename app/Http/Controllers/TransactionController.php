@@ -428,7 +428,7 @@ class TransactionController extends Controller
                 } else {
                     return response()->json([
                         'status' => 400,
-                        'message' => 'Your account Balance is low Please Select Another account',
+                        'message' => 'Your account Balance is low Please Select Another account or Add Balance on your Account',
                     ]);
                 }
             }

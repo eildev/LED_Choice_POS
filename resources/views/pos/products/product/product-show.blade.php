@@ -44,7 +44,11 @@
                                                 <img src="{{ $product->image ? asset('uploads/product/' . $product->image) : asset('dummy/image.jpg') }}"
                                                     alt="product image">
                                             </td>
-                                            <td>{{ $product->name ?? '' }}</td>
+                                            <td>
+                                                <a href="{{ route('product.ledger', $product->id) }}">
+                                                    {{ $product->name ?? '' }}
+                                                </a>
+                                            </td>
                                             @if ($barcode == 1)
                                                 <td>{{ $product->barcode }}</td>
                                             @endif

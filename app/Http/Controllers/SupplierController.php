@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 // use Validator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -41,6 +42,20 @@ class SupplierController extends Controller
             $supplier->opening_payable = $opening_receivable;
             $supplier->total_payable = 0;
             $supplier->save();
+
+            if ($request->opening_receivable > 0) {
+                $transaction = new Transaction;
+                $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->date = Carbon::now();
+                $transaction->particulars = 'Opening Due';
+                $transaction->payment_type = 'receive';
+                $transaction->supplier_id = $supplier->id;
+                $transaction->credit = 0;
+                $transaction->debit = $request->opening_receivable ?? 0;
+                $transaction->balance = $request->opening_receivable ?? 0;
+                $transaction->save();
+            }
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Supplier Save Successfully',

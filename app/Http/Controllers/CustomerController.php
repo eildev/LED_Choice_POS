@@ -41,7 +41,7 @@ class CustomerController extends Controller
             $transaction = new Transaction;
             $transaction->branch_id = Auth::user()->branch_id;
             $transaction->date = Carbon::now();
-            $transaction->particulars = 'Customer Due';
+            $transaction->particulars = 'Opening Due';
             $transaction->payment_type = 'receive';
             $transaction->customer_id = $customer->id;
             $transaction->credit = 0;

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PosSetting;
 use App\Models\Product;
 use App\Models\PromotionDetails;
+use App\Models\PurchaseItem;
+use App\Models\SaleItem;
 // use Validator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -215,5 +217,43 @@ class ProductsController extends Controller
             'products' => $products,
             'status' => 200
         ]);
+    }
+
+    public function productLedger($id)
+    {
+        $data = Product::findOrFail($id);
+        $sales = SaleItem::where('product_id', $id)->get();
+        $purchases = PurchaseItem::where('product_id', $id)->get();
+
+        $reports = [];
+
+        // Add sales to the report
+        foreach ($sales as $sale) {
+            $reports[] = [
+                'date' => $sale->created_at,
+                'particulars' => "Sale",
+                'stockIn' => 0, // No stock coming in during a sale
+                'stockOut' => $sale->qty, // The quantity sold
+                'balance' => -$sale->qty,
+            ];
+        }
+
+        // Add purchases to the report
+        foreach ($purchases as $purchase) {
+            $reports[] = [
+                'date' => $purchase->created_at,
+                'particulars' => "Purchase",
+                'stockIn' => $purchase->quantity, // The quantity purchased
+                'stockOut' => 0, // No stock going out during a purchase
+                'balance' => $purchase->quantity,
+            ];
+        }
+
+        // Sort the report by date in ascending order
+        usort($reports, function ($a, $b) {
+            return strtotime($a['date']) - strtotime($b['date']);
+        });
+
+        return view('pos.products.product-ledger.product-ledger', compact('data', 'reports'));
     }
 }

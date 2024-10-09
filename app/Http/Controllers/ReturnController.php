@@ -99,6 +99,10 @@ class ReturnController extends Controller
                     $product->save();
                 }
 
+                $sale = Sale::findOrFail($request->sale_id);
+                $sale->returned = $request->refund_amount;
+                $sale->save();
+
                 // customer crud
                 $customer = Customer::findOrFail($request->customer_id);
                 $customerDue = $customer->wallet_balance;

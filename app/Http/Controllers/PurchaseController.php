@@ -171,9 +171,14 @@ class PurchaseController extends Controller
                 $transaction->particulars = 'Purchase#' . $purchaseId;
                 $transaction->supplier_id = $request->supplier_id;
                 $transaction->payment_method = $request->payment_method;
-                $transaction->debit = $request->total_payable;
-                $transaction->credit = $request->sub_total;
-                $transaction->balance = $request->total_payable - $request->sub_total;
+                if ($request->carrying_cost > 0) {
+                    $transaction->credit = $request->total_payable - $request->carrying_cost;
+                    $transaction->debit = $request->sub_total - $request->carrying_cost;
+                } else {
+                    $transaction->credit = $request->total_payable;
+                    $transaction->debit = $request->sub_total;
+                }
+                $transaction->balance = $request->sub_total - $request->total_payable;
                 $transaction->save();
 
                 // Supplier Crud
