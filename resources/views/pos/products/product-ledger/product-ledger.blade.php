@@ -109,8 +109,7 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <th>Particulars</th>
-                                                <th>Stock In</th>
-                                                <th>Stock Out</th>
+                                                <th>Stock In/Out</th>
                                                 <th>Balance</th>
                                             </tr>
                                         </thead>
@@ -124,21 +123,31 @@
                                                     <tr>
                                                         <td>{{ $report['date']->format('F j, Y') }}</td>
                                                         <td>{{ $report['particulars'] }}</td>
-                                                        <td>{{ $report['stockIn'] }}</td>
-                                                        <td>{{ $report['stockOut'] }}</td>
+                                                        <td>
+                                                            @if ($report['stockIn'] || $report['stockOut'])
+                                                                @if ($report['stockIn'])
+                                                                    <span>{{ $report['stockIn'] }}</span>
+                                                                @else
+                                                                    <span
+                                                                        class="text-danger">{{ $report['stockOut'] }}</span>
+                                                                @endif
+                                                            @else
+                                                                0
+                                                            @endif
+                                                        </td>
                                                         <td>{{ $report['balance'] }}</td>
-                                                        @php
+                                                        {{-- @dd($report['balance']); --}}
+                                                        {{-- @php
                                                             $currentStock += $report['balance'];
-                                                        @endphp
+                                                        @endphp --}}
                                                     </tr>
                                                 @endforeach
-                                                <tr>
-                                                    <td></td>
+                                                {{-- <tr>
                                                     <td></td>
                                                     <td></td>
                                                     <td>Current Stock</td>
                                                     <td>{{ $currentStock }}</td>
-                                                </tr>
+                                                </tr> --}}
                                             @else
                                                 <tr>
                                                     <td>No Data Fount</td>

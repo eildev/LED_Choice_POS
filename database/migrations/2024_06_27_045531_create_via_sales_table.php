@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->date('invoice_date')->nullable();
             $table->bigInteger('invoice_number')->nullable();
+            $table->integer('processed_by')->nullable();
             $table->string('supplier_name')->nullable();
             $table->bigInteger('product_id')->nullable();
             $table->string('product_name')->nullable();

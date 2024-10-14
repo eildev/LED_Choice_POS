@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Transaction;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -204,8 +205,13 @@ class ReturnController extends Controller
         $branch = Branch::findOrFail($return->branch_id);
         $customer = Customer::findOrFail($return->customer_id);
         $return_items = ReturnItem::where('return_id', $return->id)->get();
+        if ($return->processed_by) {
+            $authName = User::findOrFail($return->processed_by)->name;
+        } else {
+            $authName = "Data not Found";
+        }
 
 
-        return view('pos.return.invoice', compact('return', 'branch', 'customer', 'return_items'));
+        return view('pos.return.invoice', compact('return', 'branch', 'customer', 'return_items', 'authName'));
     }
 }

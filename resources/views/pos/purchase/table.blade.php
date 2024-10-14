@@ -19,7 +19,10 @@
                 @endphp
                 <ul>
                     @foreach ($displayItems as $items)
-                        <li>{{ $items->product->name ?? '' }}</li>
+                        <li>
+                            <a
+                                href="{{ route('product.ledger', $items->product->id) }}">{{ $items->product->name ?? '' }}</a>
+                        </li>
                     @endforeach
 
                     @if ($totalItems > 5)

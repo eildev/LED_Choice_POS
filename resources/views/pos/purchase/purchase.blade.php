@@ -114,6 +114,7 @@
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                         <td>
                                             <div class="row align-items-center">
                                                 <div class="col-md-4">

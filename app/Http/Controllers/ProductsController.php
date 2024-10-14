@@ -219,40 +219,67 @@ class ProductsController extends Controller
         ]);
     }
 
+    // product Ledger
     public function productLedger($id)
     {
         $data = Product::findOrFail($id);
         $sales = SaleItem::where('product_id', $id)->get();
         $purchases = PurchaseItem::where('product_id', $id)->get();
 
-        $reports = [];
+        // Combine sales and purchases into one array
+        $transactions = [];
 
-        // Add sales to the report
         foreach ($sales as $sale) {
-            $reports[] = [
+            $transactions[] = [
                 'date' => $sale->created_at,
-                'particulars' => "Sale",
-                'stockIn' => 0, // No stock coming in during a sale
-                'stockOut' => $sale->qty, // The quantity sold
-                'balance' => -$sale->qty,
+                'type' => 'sale', // Identifies as a sale
+                'transaction' => $sale, // Store the sale object
             ];
         }
 
-        // Add purchases to the report
         foreach ($purchases as $purchase) {
-            $reports[] = [
+            $transactions[] = [
                 'date' => $purchase->created_at,
-                'particulars' => "Purchase",
-                'stockIn' => $purchase->quantity, // The quantity purchased
-                'stockOut' => 0, // No stock going out during a purchase
-                'balance' => $purchase->quantity,
+                'type' => 'purchase', // Identifies as a purchase
+                'transaction' => $purchase, // Store the purchase object
             ];
         }
 
-        // Sort the report by date in ascending order
-        usort($reports, function ($a, $b) {
+        // Sort by date
+        usort($transactions, function ($a, $b) {
             return strtotime($a['date']) - strtotime($b['date']);
         });
+
+        // Initialize report
+        $reports = [];
+        $balance = 0;
+
+        // Loop through combined transactions
+        foreach ($transactions as $item) {
+            if ($item['type'] == 'sale') {
+                // Sale transaction
+                $sale = $item['transaction'];
+                $reports[] = [
+                    'date' => $sale->created_at,
+                    'particulars' => 'Sale',
+                    'stockIn' => 0, // No stock coming in during a sale
+                    'stockOut' => $sale->qty, // Quantity sold
+                    'balance' => $balance - $sale->qty, // Decrease balance
+                ];
+                $balance -= $sale->qty;
+            } elseif ($item['type'] == 'purchase') {
+                // Purchase transaction
+                $purchase = $item['transaction'];
+                $reports[] = [
+                    'date' => $purchase->created_at,
+                    'particulars' => 'Purchase',
+                    'stockIn' => $purchase->quantity, // Quantity purchased
+                    'stockOut' => 0, // No stock going out during a purchase
+                    'balance' => $balance + $purchase->quantity, // Increase balance
+                ];
+                $balance += $purchase->quantity;
+            }
+        }
 
         return view('pos.products.product-ledger.product-ledger', compact('data', 'reports'));
     }

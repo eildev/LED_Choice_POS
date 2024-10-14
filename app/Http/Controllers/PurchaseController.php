@@ -13,6 +13,7 @@ use App\Models\PurchaseItem;
 use App\Models\Stock;
 use App\Models\Supplier;
 use App\Models\Transaction;
+use App\Models\User;
 use PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -69,6 +70,7 @@ class PurchaseController extends Controller
                 $purchase->branch_id = Auth::user()->branch_id;
                 $purchase->supplier_id = $request->supplier_id;
                 $purchase->purchase_date =  $purchaseDate;
+                $purchase->purchase_by =  Auth::user()->id;
                 $purchase->total_quantity =  $totalQty;
                 $purchase->total_amount =  $totalAmount;
                 if ($request->invoice) {
@@ -220,7 +222,16 @@ class PurchaseController extends Controller
     public function invoice($id)
     {
         $purchase = Purchase::findOrFail($id);
-        return view('pos.purchase.invoice', compact('purchase'));
+        $branch = Branch::findOrFail($purchase->branch_id);
+        $supplier = Supplier::findOrFail($purchase->supplier_id);
+        $products = PurchaseItem::where('purchase_id', $purchase->id)->get();
+        if ($purchase->purchase_by) {
+            $authName = User::findOrFail($purchase->purchase_by)->name;
+        } else {
+            $authName = "Data not Found";
+        }
+
+        return view('pos.purchase.invoice', compact('purchase', 'branch', 'supplier', 'products', 'authName'));
     }
 
     // Money Receipt

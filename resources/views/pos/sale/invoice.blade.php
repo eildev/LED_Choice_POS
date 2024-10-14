@@ -29,27 +29,16 @@
                             <p class="show_branch_address w_40">{{ $address ?? 'Banasree' }}</p>
                             <p class="show_branch_address">{{ $phone ?? '' }}, 01708008705, 01720389177</p>
                             <p class="show_branch_address">{{ $email ?? '' }}</p>
-
-
-
                             <!--<hr>-->
-
-
-                            <p class="mt-2 mb-1 show_supplier_name"><span>Customer Name:</span>
+                            <p class="mt-4 mb-1 show_supplier_name"><span>Customer Name:</span>
                                 <b>{{ $customer->name ?? '' }}</b>
                             </p>
-                            @if ($customer->address)
-                                <p class="show_supplier_address"><span>Address:</span> {{ $customer->address ?? '' }}</p>
-                            @endif
-                            @if ($customer->email)
-                                <p class="show_supplier_email"><span>Email:</span> {{ $customer->email ?? '' }}</p>
-                            @endif
                             <p class="show_supplier_phone"><span>Phone:</span> {{ $customer->phone ?? '' }}</p>
 
                         </div>
                         <div class="col-lg-3 pe-0 text-end">
                             <h4 class="fw-bolder text-uppercase text-end mt-4 mb-2">invoice</h4>
-                            <h6 class="text-end mb-5 pb-4"># INV-{{ $sale->invoice_number ?? 0 }}</h6>
+                            <h6 class="text-end mb-5 pb-4">#SALE-{{ $sale->invoice_number ?? 0 }}</h6>
                             @if ($sale->due > 0)
                                 <p class="text-end mb-1 mt-5">Due</p>
                                 <h4 class="text-end fw-normal text-danger">৳ {{ $sale->due ?? 00.0 }}</h4>
@@ -84,7 +73,10 @@
                                         @foreach ($products as $index => $product)
                                             <tr class="text-end">
                                                 <td class="text-start">{{ $index + 1 }}</td>
-                                                <td class="text-start">{{ $product->product->name ?? '' }}</td>
+                                                <td class="text-start">
+                                                    <a
+                                                        href="{{ route('product.ledger', $product->product->id) }}">{{ $product->product->name ?? '' }}</a>
+                                                </td>
                                                 <td>{{ $product->wa_duration ?? 0 }}</td>
                                                 <td>{{ $product->rate ?? 0 }}</td>
                                                 <td>{{ $product->qty ?? 0 }}</td>
@@ -239,7 +231,7 @@
                     </div>
                     <div class="mt-5">
                         <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
-                        <p class=""> {{ $authName->name ?? '' }}</p>
+                        <p class=""> {{ $authName ?? '' }}</p>
                     </div>
                     <div class="footer_invoice text-center">
                         <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech

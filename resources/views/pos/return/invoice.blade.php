@@ -27,25 +27,20 @@
                             @else
                                 <a href="#" class="noble-ui-logo logo-light d-block mt-3">EIL<span>POS</span></a>
                             @endif
-                            <p class="show_branch_address w_40">{{ $address ?? 'Banasree' }}</p>
-                            <p class="show_branch_address">{{ $phone ?? '' }}, 01708008705, 01720389177</p>
-                            <p class="show_branch_address">{{ $email ?? '' }}</p>
+                            <p class="show_branch_address">{{ $branch->address ?? 'accordion ' }}</p>
+                            <p class="show_branch_email">{{ $branch->email ?? '' }}</p>
+                            <p class="show_branch_phone">{{ $branch->phone ?? '' }}</p>
                             <!--<hr>-->
-                            <p class="mt-2 mb-1 show_supplier_name"><span>Customer Name:</span>
-                                <b>{{ $customer->name ?? '' }}</b>
-                            </p>
-                            @if ($customer->address)
-                                <p class="show_supplier_address"><span>Address:</span> {{ $customer->address ?? '' }}</p>
-                            @endif
-                            @if ($customer->email)
-                                <p class="show_supplier_email"><span>Email:</span> {{ $customer->email ?? '' }}</p>
-                            @endif
-                            <p class="show_supplier_phone"><span>Phone:</span> {{ $customer->phone ?? '' }}</p>
+
+
+                            <p class="mt-4">Customer Information</p>
+                            <p class=" mb-1 show_supplier_name"><b>{{ $customer->name ?? '' }}</b></p>
+                            <p class="show_supplier_phone">{{ $customer->phone ?? '' }}</p>
 
                         </div>
                         <div class="col-lg-3 pe-0 text-end">
                             <h4 class="fw-bolder text-uppercase text-end mt-4 mb-2">invoice</h4>
-                            <h6 class="text-end mb-5 pb-4"># INV-{{ $return->return_invoice_number ?? 0 }}</h6>
+                            <h6 class="text-end mb-5 pb-4">#RETURN-{{ $return->return_invoice_number ?? 0 }}</h6>
 
                             <p class="text-end mb-1 mt-5">Return</p>
                             <h4 class="text-end fw-normal">৳ {{ $return->refund_amount ?? 00.0 }}</h4>
@@ -72,7 +67,10 @@
                                         @foreach ($return_items as $index => $item)
                                             <tr class="text-end">
                                                 <td class="text-start">{{ $index + 1 }}</td>
-                                                <td class="text-start">{{ $item->product->name ?? '' }}</td>
+                                                <td class="text-start">
+                                                    <a
+                                                        href="{{ route('product.ledger', $item->product->id) }}">{{ $item->product->name ?? '' }}</a>
+                                                </td>
                                                 <td class="text-start">{{ $item->return_reason ?? '' }}</td>
                                                 <td>{{ $item->return_price ?? 0 }}</td>
                                                 <td>{{ $item->quantity ?? 0 }}</td>
@@ -90,6 +88,14 @@
                                                 <td></td>
                                             </tr>
                                         @endfor
+                                        <tr class="text-end">
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>Total</td>
+                                            <td>{{ $return->refund_amount ?? 00.0 }}</td>
+                                        </tr>
                                     @else
                                         <tr class="text-center">
                                             <td>Data Not Found</td>
@@ -113,6 +119,17 @@
                                 onclick="window.print();"><i data-feather="printer" class="me-2 icon-md"></i>Print
                                 Invoice</a>
                         @endif
+                    </div>
+                    <div class="mt-5">
+                        <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
+                        <p class=""> {{ $authName ?? '' }}</p>
+                    </div>
+                    <div class="footer_invoice text-center">
+                        <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
+                                Limited.</a> All rights
+                            reserved. Powered by Eclipse Intellitech <a
+                                href="https://electro-pos.eclipseintellitech.com/login" target="_blank">EIL
+                                Electro</a> Software</p>
                     </div>
                 </div>
             </div>
@@ -167,6 +184,14 @@
     </script>
 
     <style>
+        .table> :not(caption)>*>* {
+            padding: 0px 10px !important;
+        }
+
+        .footer_invoice p {
+            font-size: 12px !important;
+        }
+
         @media print {
             .table> :not(caption)>*>* {
                 padding: 0px 10px !important;
@@ -265,6 +290,14 @@
 
             .print_bg_white {
                 background-color: transparent !important;
+            }
+
+            .table> :not(caption)>*>* {
+                padding: 0px 10px !important;
+            }
+
+            .footer_invoice p {
+                font-size: 12px !important;
             }
         }
     </style>

@@ -16,12 +16,23 @@
 
             </td>
             <td>
+
+                @php
+                    $totalItems = $data->returnItem->count();
+                    $displayItems = $data->returnItem->take(5);
+                    $remainingItems = $totalItems - 5;
+                @endphp
                 <ul>
-                    {{-- @dd($data->returnItem) --}}
-                    @foreach ($data->returnItem as $item)
-                        {{-- @dd($item->product) --}}
-                        <li>{{ $item->product->name ?? '' }}</li>
+                    @foreach ($displayItems as $items)
+                        <li>
+                            <a
+                                href="{{ route('product.ledger', $items->product_id) }}">{{ $items->product->name ?? '' }}</a>
+                        </li>
                     @endforeach
+
+                    @if ($totalItems > 5)
+                        <li>and more {{ $remainingItems }}...</li>
+                    @endif
                 </ul>
             </td>
             <td>{{ $data->return_date ?? 'Date not Available' }}</td>

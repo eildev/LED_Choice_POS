@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountTransaction;
+use App\Models\Branch;
+use App\Models\Sale;
+use App\Models\User;
 use App\Models\ViaSale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -81,11 +84,18 @@ class ViaSaleController extends Controller
     public function viaSaleInvoice($id)
     {
         $viaSale = ViaSale::findOrFail($id);
-        return view('pos.via_sale.invoice', compact('viaSale'));
+        $Sales = Sale::where('invoice_number', $viaSale->invoice_number)->first();
+        $branch = Branch::findOrFail($Sales->branch_id)->first();
+        if ($viaSale->processed_by) {
+            $authName = User::findOrFail($viaSale->processed_by)->name;
+        } else {
+            $authName = "Data not Found";
+        }
+        return view('pos.via_sale.invoice', compact('viaSale', 'branch', 'Sales', 'authName'));
     }
     public function ViaSaleProductDelete($id)
     {
-        $viaSale = ViaSale::findOrFail($id)->delete();
+        ViaSale::findOrFail($id)->delete();
         return response()->json(['message' => 'Via Sale deleted successfully.']);
     }
 }

@@ -329,7 +329,13 @@ class SaleController extends Controller
         $branch = Branch::findOrFail($sale->branch_id);
         $customer = Customer::findOrFail($sale->customer_id);
         $products = SaleItem::where('sale_id', $sale->id)->get();
-        $authName = User::findOrFail($sale->sale_by);
+
+        if ($sale->sale_by) {
+            $authName = User::findOrFail($sale->sale_by)->name;
+        } else {
+            $authName = "Data not Found";
+        }
+        // $authName = User::findOrFail($sale->sale_by);
         return view('pos.sale.invoice', compact('sale', 'customer', 'products', 'authName'));
     }
     public function print($id)
