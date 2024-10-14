@@ -65,6 +65,7 @@ class SaleController extends Controller
                 $transaction = new Transaction;
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->date = Carbon::now();
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->payment_type = 'receive';
                 $transaction->particulars = 'Opening Due';
                 $transaction->customer_id = $customer->id;
@@ -248,6 +249,7 @@ class SaleController extends Controller
                     $viaSale->invoice_date = Carbon::now();
                     $viaSale->branch_id =  Auth::user()->branch_id;
                     $viaSale->invoice_number = $request->invoice_number;
+                    $viaSale->processed_by = Auth::user()->id;
                     $viaSale->supplier_name = 'Direct Sales';
                     $viaSale->product_id = $viaItem->product_id;
                     $viaSale->product_name = $viaItem->product->name;
@@ -300,6 +302,7 @@ class SaleController extends Controller
 
             $transaction = new Transaction;
             $transaction->date =  $request->sale_date;
+            $transaction->processed_by =  Auth::user()->id;
             $transaction->payment_type = 'receive';
             $transaction->particulars = 'Sale#' . $saleId;
             $transaction->customer_id = $request->customer_id;
@@ -483,6 +486,7 @@ class SaleController extends Controller
                 // Update existing transaction
                 $transaction->date =  $request->sale_date;
                 $transaction->branch_id =  Auth::user()->branch_id;
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->payment_type = 'receive';
                 $transaction->particulars = 'Sale#' . $sale->id;
                 $transaction->credit = $transaction->credit + $request->change_amount;
@@ -494,6 +498,7 @@ class SaleController extends Controller
                 // Create new transaction
                 $transaction = new Transaction;
                 $transaction->date =  $request->sale_date;
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->branch_id =  Auth::user()->branch_id;
                 $transaction->payment_type = 'receive';
                 $transaction->particulars = 'Sale#' . $sale->id;
@@ -601,6 +606,7 @@ class SaleController extends Controller
 
             $transaction = new Transaction;
             $transaction->branch_id =  Auth::user()->branch_id;
+            $transaction->processed_by =  Auth::user()->id;
             $transaction->date = $request->payment_date;
             $transaction->payment_type = 'receive';
             $transaction->particulars = 'Sale#' . $id;
@@ -842,6 +848,7 @@ class SaleController extends Controller
                 $viaSale->invoice_date = Carbon::now();
                 $viaSale->branch_id =  Auth::user()->branch_id;
                 $viaSale->invoice_number = $request->invoice_number;
+                $viaSale->processed_by = Auth::user()->id;
                 $viaSale->supplier_name = $request->via_supplier_name;
                 $viaSale->product_id = $product->id;
                 $viaSale->product_name = $request->name;

@@ -60,17 +60,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @if ($products->count() > 0)
-                                        @foreach ($products as $index => $product)
-                                            <tr class="text-end">
-                                                <td class="text-start">{{ $index + 1 }}</td>
-                                                <td class="text-start">{{ $product->product->name }}</td>
-                                                <td>{{ $product->quantity }}</td>
-                                                <td>{{ $product->unit_price }}</td>
-                                                <td>{{ $product->total_price }}</td>
-                                            </tr>
-                                        @endforeach
-                                    @else --}}
                                     <tr class="text-end">
                                         <td class="text-start">1</td>
                                         <td class="text-start">{{ $viaSale->product_name }}</td>
@@ -96,10 +85,13 @@
                                                 <td>Paid</td>
                                                 <td class="text-end">৳ {{ number_format($viaSale->paid) }}</td>
                                             </tr>
-                                            <tr>
-                                                <td>Due</td>
-                                                <td class="text-end">৳ {{ number_format($viaSale->due) }}</td>
-                                            </tr>
+                                            @if ($viaSale->due > 0)
+                                                <tr>
+                                                    <td>Due</td>
+                                                    <td class="text-end text-danger">৳ {{ number_format($viaSale->due) }}
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -112,6 +104,11 @@
                         <a href="javascript:;" class="btn btn-outline-primary float-end mt-4" onclick="window.print();"><i
                                 data-feather="printer" class="me-2 icon-md"></i>Print</a>
                     </div>
+                    <div class="mt-5">
+                        <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
+                        <p class=""> {{ $authName ?? '' }}</p>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -122,11 +119,36 @@
                 <a href="{{ route('purchase') }}" class="btn btn-outline-primary mt-4"><i data-feather="plus-circle"
                         class="me-2 icon-md"></i>Add Purchase</a>
             </div>
+
+        </div>
+        <div class="footer_invoice text-center mt-4">
+            <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
+                    Limited.</a> All rights
+                reserved. Powered by Eclipse Intellitech <a href="https://electro-pos.eclipseintellitech.com/login"
+                    target="_blank">EIL
+                    Electro</a> Software</p>
         </div>
     </div>
 
     <style>
+        .footer_invoice {
+            display: none !important;
+
+        }
+
         @media print {
+            .footer_invoice {
+                display: block !important;
+                position: absolute !important;
+                bottom: 0 !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
+
+            .footer_invoice p {
+                font-size: 12px !important;
+                color: #000;
+            }
 
             nav,
             .footer {

@@ -46,9 +46,10 @@ class SupplierController extends Controller
             if ($request->opening_receivable > 0) {
                 $transaction = new Transaction;
                 $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->date = Carbon::now();
                 $transaction->particulars = 'Opening Due';
-                $transaction->payment_type = 'receive';
+                $transaction->payment_type = 'pay';
                 $transaction->supplier_id = $supplier->id;
                 $transaction->credit = 0;
                 $transaction->debit = $request->opening_receivable ?? 0;

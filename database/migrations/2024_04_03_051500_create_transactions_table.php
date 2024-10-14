@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->date('date')->nullable();
+            $table->integer('processed_by')->nullable();
             $table->enum('payment_type', ['receive', 'pay'])->comment('Recieve or Pay');
             $table->string('particulars')->nullable()->comment('Purchase #12 or Paid to Supplyer/Sale #10 Received from Customer');
             $table->integer('customer_id')->nullable();

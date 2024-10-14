@@ -12,6 +12,7 @@ use App\Models\Purchase;
 use App\Models\Investor;
 use Carbon\Carbon;
 use App\Models\Sale;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -189,6 +190,7 @@ class TransactionController extends Controller
                     $transaction = Transaction::create([
                         'branch_id' => Auth::user()->branch_id,
                         'date' => $request->date,
+                        'processed_by' => Auth::user()->id,
                         'payment_type' => $request->transaction_type,
                         'particulars' => 'OthersPayment',
                         'debit' => $request->amount,
@@ -234,6 +236,7 @@ class TransactionController extends Controller
                 $transaction = Transaction::create([
                     'branch_id' => Auth::user()->branch_id,
                     'date' => $request->date,
+                    'processed_by' => Auth::user()->id,
                     'payment_type' => $request->transaction_type,
                     'particulars' => 'OthersReceive',
                     'credit' => $request->amount,
@@ -310,7 +313,23 @@ class TransactionController extends Controller
     public function TransactionInvoiceReceipt($id)
     {
         $transaction = Transaction::findOrFail($id);
-        return view('pos.transaction.invoice', compact('transaction'));
+        if ($transaction->customer_id) {
+            $data = Customer::findOrFail($transaction->customer_id);
+        } else if ($transaction->supplier_id) {
+            $data = Supplier::findOrFail($transaction->supplier_id);
+        } else if ($transaction->others_id) {
+            $data = Investor::findOrFail($transaction->others_id);
+        } else {
+            $data = "";
+        }
+
+        if ($transaction->processed_by) {
+            $authName = User::findOrFail($transaction->processed_by)->name;
+        } else {
+            $authName = "Data not Found";
+        }
+
+        return view('pos.transaction.invoice', compact('transaction', 'data', 'authName'));
     }
     public function InvestmentStore(Request $request)
     {
@@ -370,6 +389,7 @@ class TransactionController extends Controller
             $transaction = new Transaction;
             $transaction->branch_id = Auth::user()->branch_id;
             $transaction->date = Carbon::now();
+            $transaction->processed_by =  Auth::user()->id;
             $transaction->payment_type = 'receive';
             $transaction->payment_method = $request->account;
             $transaction->credit = $request->payment_balance;

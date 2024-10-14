@@ -141,9 +141,7 @@
                                                         <td class="id">
                                                             @php
                                                                 $particularData = $transaction->particularData();
-
                                                             @endphp
-
                                                             @if ($particularData)
                                                                 @if ($isCustomer)
                                                                     @if ($particularData->invoice_number)

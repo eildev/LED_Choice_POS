@@ -169,6 +169,7 @@ class PurchaseController extends Controller
                 $transaction = new Transaction;
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->date =   $purchaseDate;
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->payment_type = 'pay';
                 $transaction->particulars = 'Purchase#' . $purchaseId;
                 $transaction->supplier_id = $request->supplier_id;
@@ -388,6 +389,7 @@ class PurchaseController extends Controller
                     $transaction = Transaction::where('particulars', 'Purchase#' . $id)->first();
                     $transaction->branch_id = Auth::user()->branch_id;
                     $transaction->date =   $purchaseDate;
+                    $transaction->processed_by =  Auth::user()->id;
                     $transaction->payment_type = 'pay';
                     $transaction->particulars = 'Purchase#' . $id;
                     $transaction->supplier_id = $request->supplier_id;

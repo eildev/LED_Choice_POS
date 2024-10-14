@@ -121,6 +121,7 @@ class ReturnController extends Controller
                 $transaction = new Transaction;
                 $transaction->date = $request->formattedReturnDate;
                 $transaction->others_id = $returns->id;
+                $transaction->processed_by =  Auth::user()->id;
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->payment_method = $request->paymentMethod;
                 $transaction->created_at = Carbon::now();

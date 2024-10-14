@@ -43,8 +43,8 @@
                                             <td>{{ $via->paid ?? 0 }}</td>
                                             <td>{{ $via->due ?? 0 }}</td>
                                             <td>
-                                                <span class="{{ $via->status == 1 ? 'text-success' : 'text-danger' }}">
-                                                    {{ $via->status == 1 ? 'Paid' : 'Unpaid' }}
+                                                <span class="{{ $via->due <= 0 ? 'text-success' : 'text-danger' }}">
+                                                    {{ $via->due <= 0 ? 'Paid' : 'Unpaid' }}
                                                 </span>
                                             </td>
                                             <td>
@@ -58,13 +58,14 @@
                                                         <a class="dropdown-item"
                                                             href="{{ route('via.sale.invoice', $via->id) }}"><i
                                                                 class="fa-solid fa-file-invoice me-2"></i> Invoice</a>
-                                                        @if ($via->status == 0)
+                                                        @if ($via->due > 0)
                                                             <a class="dropdown-item add_payment" href="#"
                                                                 data-id="{{ $via->id }}" data-bs-toggle="modal"
                                                                 data-bs-target="#paymentModal"><i
                                                                     class="fa-solid fa-credit-card me-2"></i> Payment</a>
                                                         @endif
-                                                        <a class="dropdown-item delete_via_sale" data-id="{{ $via->id }}"   href="#"><i
+                                                        <a class="dropdown-item delete_via_sale"
+                                                            data-id="{{ $via->id }}" href="#"><i
                                                                 class="fa-solid fa-trash-can me-2"></i>Delete</a>
                                                     </div>
                                                 </div>
@@ -231,13 +232,13 @@
             })
         })
         $(document).ready(function() {
-    $('.delete_via_sale').on('click', function(e) {
-        e.preventDefault();
+            $('.delete_via_sale').on('click', function(e) {
+                e.preventDefault();
 
-        var id = $(this).data('id');
-        var url = '/via/sale/delete/' + id;
-        // alert(id)
-        Swal.fire({
+                var id = $(this).data('id');
+                var url = '/via/sale/delete/' + id;
+                // alert(id)
+                Swal.fire({
                     title: "Are you sure?",
                     text: "You won't be able to Delete this!",
                     icon: "warning",
@@ -247,39 +248,39 @@
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
                     if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.message) {
-                        Swal.fire({
-                            title: "Deleted!",
-                            text: "Your file has been deleted.",
-                            icon: "success"
+                        $.ajax({
+                            url: url,
+                            type: 'GET',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                if (response.message) {
+                                    Swal.fire({
+                                        title: "Deleted!",
+                                        text: "Your file has been deleted.",
+                                        icon: "success"
+                                    });
+                                    location.reload();
+                                } else {
+                                    Swal.fire({
+                                        position: "top-end",
+                                        icon: "warning",
+                                        title: "Deleted Unsuccessful!",
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                }
+                                location.reload(); // Reload the page
+                            },
+                            error: function(xhr) {
+                                alert('Error deleting record.');
+                            }
                         });
-                        location.reload();
-                   } else {
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "warning",
-                            title: "Deleted Unsuccessful!",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                      }
-                     location.reload(); // Reload the page
-                },
-                error: function(xhr) {
-                    alert('Error deleting record.');
-                }
+                    }
+                });
             });
-        }
-    });
-    });
 
-});
+        });
     </script>
 @endsection

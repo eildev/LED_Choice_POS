@@ -233,13 +233,7 @@
                         <h5 class="fw-normal text-success m-0 p-0"><b>Invoice by</b></h5>
                         <p class=""> {{ $authName ?? '' }}</p>
                     </div>
-                    <div class="footer_invoice text-center">
-                        <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
-                                Limited.</a> All rights
-                            reserved. Powered by Eclipse Intellitech <a
-                                href="https://electro-pos.eclipseintellitech.com/login" target="_blank">EIL
-                                Electro</a> Software</p>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -250,6 +244,14 @@
                 <a href="{{ route('sale') }}" class="btn btn-outline-primary mt-4"><i data-feather="plus-circle"
                         class="me-2 icon-md"></i>Sale</a>
             </div>
+
+        </div>
+        <div class="footer_invoice text-center">
+            <p>© 2024 <a href="https://eclipseintellitech.com/" target="_blank">Eclipse Intellitech
+                    Limited.</a> All rights
+                reserved. Powered by Eclipse Intellitech <a href="https://electro-pos.eclipseintellitech.com/login"
+                    target="_blank">EIL
+                    Electro</a> Software</p>
         </div>
     </div>
 
@@ -297,8 +299,8 @@
             padding: 0px 10px !important;
         }
 
-        .footer_invoice p {
-            font-size: 12px !important;
+        .footer_invoice {
+            display: none !important;
         }
 
         .margin_left_m_14 {
@@ -441,8 +443,17 @@
                 background-color: transparent !important;
             }
 
+            .footer_invoice {
+                display: block !important;
+                position: absolute !important;
+                bottom: 0 !important;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
+
             .footer_invoice p {
                 font-size: 12px !important;
+                color: #000;
             }
         }
     </style>
