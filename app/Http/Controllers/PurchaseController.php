@@ -229,7 +229,7 @@ class PurchaseController extends Controller
         if ($purchase->purchase_by) {
             $authName = User::findOrFail($purchase->purchase_by)->name;
         } else {
-            $authName = "Data not Found";
+            $authName = "";
         }
 
         return view('pos.purchase.invoice', compact('purchase', 'branch', 'supplier', 'products', 'authName'));

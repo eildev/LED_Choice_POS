@@ -209,7 +209,7 @@ class ReturnController extends Controller
         if ($return->processed_by) {
             $authName = User::findOrFail($return->processed_by)->name;
         } else {
-            $authName = "Data not Found";
+            $authName = "";
         }
 
 

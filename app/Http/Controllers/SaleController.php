@@ -336,7 +336,7 @@ class SaleController extends Controller
         if ($sale->sale_by) {
             $authName = User::findOrFail($sale->sale_by)->name;
         } else {
-            $authName = "Data not Found";
+            $authName = "";
         }
         // $authName = User::findOrFail($sale->sale_by);
         return view('pos.sale.invoice', compact('sale', 'customer', 'products', 'authName'));

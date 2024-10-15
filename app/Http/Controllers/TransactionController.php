@@ -326,7 +326,7 @@ class TransactionController extends Controller
         if ($transaction->processed_by) {
             $authName = User::findOrFail($transaction->processed_by)->name;
         } else {
-            $authName = "Data not Found";
+            $authName = "";
         }
 
         return view('pos.transaction.invoice', compact('transaction', 'data', 'authName'));

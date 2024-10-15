@@ -89,7 +89,7 @@ class ViaSaleController extends Controller
         if ($viaSale->processed_by) {
             $authName = User::findOrFail($viaSale->processed_by)->name;
         } else {
-            $authName = "Data not Found";
+            $authName = "";
         }
         return view('pos.via_sale.invoice', compact('viaSale', 'branch', 'Sales', 'authName'));
     }
