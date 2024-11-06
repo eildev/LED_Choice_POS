@@ -156,7 +156,7 @@
                     <h6 class="card-title text-info">Today Cash & Sales Report</h6>
 
                     <div id="" class="table-responsive">
-                        <table id="dataTableExample" class="table">
+                        <table id="dataTableExample1" class="table">
                             <thead>
                                 <tr>
                                     <th>Invoice No.</th>
@@ -167,12 +167,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                    $due = 0;
+                                    $paid = 0;
+                                    $total = 0;
+                                @endphp
                                 @if ($totalSaleCashReport->count() > 0)
-                                    @php
-                                        $due = 0;
-                                        $paid = 0;
-                                        $total = 0;
-                                    @endphp
                                     @foreach ($totalSaleCashReport as $key => $sale)
                                         <tr>
                                             <td>
@@ -353,7 +353,7 @@
                     <h6 class="card-title text-info">Today Purchase Report</h6>
 
                     <div id="" class="table-responsive">
-                        <table id="dataTableExample" class="table">
+                        <table id="dataTableExample4" class="table">
                             <thead>
                                 <tr>
                                     <th>SN#</th>
@@ -426,7 +426,7 @@
                     <h6 class="card-title text-info">Today Salary Report</h6>
 
                     <div id="" class="table-responsive">
-                        <table id="dataTableExample2" class="table">
+                        <table id="dataTableExample3" class="table">
                             <thead>
                                 <tr>
                                     <th>SN#</th>
