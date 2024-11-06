@@ -62,6 +62,11 @@ class ReportController extends Controller
             $todayTotalSaleQty = Sale::whereDate('sale_date', $todayDate)->sum('quantity');
             $todayTotalSaleDue = Sale::whereDate('sale_date', $todayDate)->sum('due');
 
+            // Today sales cash report
+            $totalSaleCashReport = Transaction::where('customer_id', '!=', null)
+                ->whereDate('created_at', $todayDate)
+                ->get();
+
             //Today Purchase
             $todayPurchaseItems = PurchaseItem::whereDate('created_at', $todayDate);
             $purchases = Purchase::whereDate('created_at', $todayDate)->get();
@@ -111,6 +116,11 @@ class ReportController extends Controller
             $todayTotalSaleDue = Sale::where('branch_id', Auth::user()->branch_id)
                 ->whereDate('sale_date', $todayDate)->sum('due');
 
+            // Today sales cash report
+            $totalSaleCashReport = Transaction::where('branch_id', Auth::user()->branch_id)->where('customer_id', '!=', null)
+                ->whereDate('created_at', $todayDate)
+                ->get();
+
             //Today Purchase
             $todayPurchaseItems = PurchaseItem::whereHas('Purchas', function ($query) {
                 $query->where('branch_id', Auth::user()->branch_id);
@@ -156,7 +166,7 @@ class ReportController extends Controller
             $totalSalary = $salary->sum('debit');
             $totalSalaryDue = $salary->sum('balance');
         }
-        return view('pos.report.today.today', compact('todayInvoiceAmount', 'totalSales', 'today_grand_total', 'todayExpenseAmount', 'totalSalary', 'expense', 'todayTotalSaleAmount', 'todayTotalSaleDue', 'todayTotalSaleQty', 'purchases', 'todayTotalPurchaseDue', 'todayTotalPurchaseQty', 'todayTotalPurchaseAmount', 'salary', 'branchData'));
+        return view('pos.report.today.today', compact('todayInvoiceAmount', 'totalSales', 'today_grand_total', 'todayExpenseAmount', 'totalSalary', 'expense', 'todayTotalSaleAmount', 'todayTotalSaleDue', 'todayTotalSaleQty', 'purchases', 'todayTotalPurchaseDue', 'todayTotalPurchaseQty', 'todayTotalPurchaseAmount', 'salary', 'branchData', 'totalSaleCashReport'));
     }
     // summary report function
     public function summaryReport()
@@ -577,10 +587,10 @@ class ReportController extends Controller
                     ->where('payment_type', 'pay')
                     ->whereDate('created_at',  $date)
                     ->sum('credit');
-                $addBalance = AccountTransaction::where(function($query) {
+                $addBalance = AccountTransaction::where(function ($query) {
                     $query->where('purpose', 'Add Bank Balance')
-                          ->orWhere('purpose', 'Bank');
-                    })
+                        ->orWhere('purpose', 'Bank');
+                })
                     ->whereDate('created_at',  $date)
                     ->sum('credit');
                 $previousDayBalance = 0;
@@ -690,9 +700,9 @@ class ReportController extends Controller
                     ->whereDate('created_at',  $date)
                     ->sum('credit');
                 $addBalance = AccountTransaction::where('branch_id', Auth::user()->branch_id)
-                    ->where(function($query) {
-                    $query->where('purpose', 'Add Bank Balance')
-                          ->orWhere('purpose', 'Bank');
+                    ->where(function ($query) {
+                        $query->where('purpose', 'Add Bank Balance')
+                            ->orWhere('purpose', 'Bank');
                     })
                     ->whereDate('created_at',  $date)
                     ->sum('credit');
@@ -814,10 +824,10 @@ class ReportController extends Controller
                 ->where('payment_type', 'pay')
                 ->whereDate('created_at',  $date)
                 ->sum('credit');
-            $addBalance = AccountTransaction::where(function($query) {
-                    $query->where('purpose', 'Add Bank Balance')
-                          ->orWhere('purpose', 'Bank');
-                })
+            $addBalance = AccountTransaction::where(function ($query) {
+                $query->where('purpose', 'Add Bank Balance')
+                    ->orWhere('purpose', 'Bank');
+            })
                 ->whereDate('created_at',  $date)
                 ->sum('credit');
             $previousDayBalance = 0;
@@ -891,9 +901,9 @@ class ReportController extends Controller
                 ->whereDate('created_at',  $date)
                 ->sum('credit');
             $addBalance = AccountTransaction::where('branch_id', Auth::user()->branch_id)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('purpose', 'Add Bank Balance')
-                          ->orWhere('purpose', 'Bank');
+                        ->orWhere('purpose', 'Bank');
                 })
                 ->whereDate('created_at',  $date)
                 ->sum('credit');

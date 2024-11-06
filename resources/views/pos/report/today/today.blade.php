@@ -92,7 +92,6 @@
                         <table id="dataTableExample" class="table">
                             <thead>
                                 <tr>
-                                    <th>SN#</th>
                                     <th>Invoice No.</th>
                                     <th>Product Name</th>
                                     <th>Qty</th>
@@ -104,7 +103,6 @@
                                 @if ($totalSales->count() > 0)
                                     @foreach ($totalSales as $key => $sale)
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
                                             <td>
                                                 <a
                                                     href="{{ route('sale.invoice', $sale->id) }}">#{{ $sale->invoice_number ?? 0 }}</a>
@@ -112,9 +110,7 @@
                                             <td>
                                                 <ul>
                                                     @foreach ($sale->saleItem as $item)
-                                                        <li>{{ $item->product->name ?? '' }}
-                                                            <br>({{ $item->product->barcode ?? '' }})
-                                                        </li>
+                                                        <li>{{ $item->product->name ?? '' }}</li>
                                                     @endforeach
                                                 </ul>
                                             </td>
@@ -140,10 +136,147 @@
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th></th>
                                     <th>Qty : {{ $todayTotalSaleQty ?? 0 }}</th>
                                     <th>Total : {{ $todayTotalSaleDue ?? 0 }}Tk</th>
                                     <th>Total : {{ $todayTotalSaleAmount ?? 0 }}Tk</th>
+                                </tr>
+                            </tfoot>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        {{-- today sale cash Report  --}}
+        <div class="col-md-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title text-info">Today Cash & Sales Report</h6>
+
+                    <div id="" class="table-responsive">
+                        <table id="dataTableExample" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice No.</th>
+                                    <th>Particulars</th>
+                                    <th>Total</th>
+                                    <th>Due</th>
+                                    <th>Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($totalSaleCashReport->count() > 0)
+                                    @php
+                                        $due = 0;
+                                        $paid = 0;
+                                        $total = 0;
+                                    @endphp
+                                    @foreach ($totalSaleCashReport as $key => $sale)
+                                        <tr>
+                                            <td>
+                                                @php
+                                                    $particularData = $sale->particularData();
+                                                @endphp
+                                                @if ($particularData)
+                                                    @if ($particularData->invoice_number)
+                                                        <a href="{{ route('sale.invoice', $particularData->id) }}">
+                                                            #{{ $particularData->invoice_number ?? 0 }}
+                                                        </a>
+                                                    @else
+                                                        <a
+                                                            href="{{ route('return.products.invoice', $particularData->id) }}">
+                                                            #{{ $particularData->return_invoice_number ?? 0 }}
+                                                        </a>
+                                                    @endif
+                                                @else
+                                                    <a href="{{ route('transaction.invoice.receipt', $sale->id) }}">
+                                                        #{{ rand(000000, 999999) }}
+                                                    </a>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($sale->particulars == 'Return' || $sale->particulars == 'Adjust Due Collection')
+                                                    @if ($sale->particulars == 'Adjust Due Collection')
+                                                        Return
+                                                    @else
+                                                        Cash Return
+                                                    @endif
+                                                @elseif (strpos($sale->particulars, 'Sale#') !== false)
+                                                    Sale
+                                                @elseif ($sale->particulars == 'SaleDue')
+                                                    Due Collection
+                                                @else
+                                                    {{ $sale->particulars ?? '' }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($sale->particulars == 'Return' || $sale->particulars == 'Adjust Due Collection')
+                                                    @if ($sale->particulars == 'Adjust Due Collection')
+                                                        {{ number_format($sale->credit, 2) ?? 0 }}
+                                                        @php
+                                                            $total += $sale->credit;
+                                                        @endphp
+                                                    @else
+                                                        {{ number_format($sale->debit, 2) ?? 0 }}
+                                                        @php
+                                                            $total += $sale->debit;
+                                                        @endphp
+                                                    @endif
+                                                @elseif ($sale->particulars == 'SaleDue' || $sale->particulars == 'PurchaseDue')
+                                                    {{ number_format($sale->credit, 2) ?? 0 }}
+                                                    @php
+                                                        $total += $sale->credit;
+                                                    @endphp
+                                                @else
+                                                    {{ number_format($sale->debit, 2) ?? 0 }}
+                                                    @php
+                                                        $total += $sale->debit;
+                                                    @endphp
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($sale->particulars == 'Return' || $sale->particulars == 'Adjust Due Collection')
+                                                    00
+                                                @else
+                                                    @if ($sale->debit > $sale->credit)
+                                                        {{ number_format($sale->debit - $sale->credit, 2) ?? 0 }}
+                                                        @php
+                                                            $cal = $sale->debit - $sale->credit;
+                                                            $due += $sale->debit - $sale->credit;
+                                                        @endphp
+                                                    @else
+                                                        00
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($sale->particulars == 'Return')
+                                                    00
+                                                @else
+                                                    {{ number_format($sale->credit, 2) ?? 0 }}
+                                                    @php
+                                                        $paid += $sale->credit;
+                                                    @endphp
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="12">
+                                            <div class="text-center text-warning mb-2">Data Not Found</div>
+                                        </td>
+                                    </tr>
+                                @endif
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>{{ number_format($total, 2) ?? 0 }}</th>
+                                    <th>{{ number_format($due, 2) ?? 0 }}</th>
+                                    <th>{{ number_format($paid, 2) ?? 0 }}</th>
                                 </tr>
                             </tfoot>
                             </tbody>
@@ -211,10 +344,7 @@
                 </div>
             </div>
         </div>
-    </div>
 
-
-    <div class="row">
 
         {{-- today Purchase Report  --}}
         <div class="col-md-6 grid-margin stretch-card">
