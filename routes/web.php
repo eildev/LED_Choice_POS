@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/product', 'index')->name('product');
         Route::post('/product/store', 'store')->name('product.store');
         Route::get('/product/view', 'view')->name('product.view');
+        Route::get('/via-product/view', 'viaProductsView')->name('product.via');
         Route::get('/product/edit/{id}', 'edit')->name('product.edit');
         Route::post('/product/update/{id}', 'update')->name('product.update');
         Route::get('/product/destroy/{id}', 'destroy')->name('product.destroy');

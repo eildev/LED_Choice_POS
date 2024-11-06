@@ -5,7 +5,7 @@
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Manage Products</li>
+            <li class="breadcrumb-item active" aria-current="page">Via Products</li>
         </ol>
     </nav>
     <div class="row">
@@ -24,9 +24,6 @@
                                     <th>SN</th>
                                     <th>Image</th>
                                     <th>Name</th>
-                                    @if ($barcode == 1)
-                                        <th>Barcode</th>
-                                    @endif
                                     <th>Category</th>
                                     <th>Brand</th>
                                     <th>Cost Price</th>
@@ -49,9 +46,6 @@
                                                     {{ $product->name ?? '' }}
                                                 </a>
                                             </td>
-                                            @if ($barcode == 1)
-                                                <td>{{ $product->barcode }}</td>
-                                            @endif
                                             <td>{{ $product->category->name ?? '' }}</td>
                                             <td>{{ $product->brand->name ?? '' }}</td>
                                             <td>{{ $product->cost ?? 0 }}</td>
@@ -70,54 +64,14 @@
                                                         <i data-feather="trash-2"></i>
                                                     </a>
                                                 @endif
-                                                @if ($barcode == 1)
-                                                    <a target="_blank" href="{{ route('product.barcode', $product->id) }}"
-                                                        class="btn btn-info btn-icon">
-                                                        <i class="fa-solid fa-barcode"></i>
-                                                    </a>
-                                                @endif
-                                                {{-- <a href="#"  data-bs-toggle="modal" data-bs-target="#exampleModal{{$product->id}}" class="input-text btn border-dark">
-                                                    <i class="fa-solid fa-barcode"></i>
-                                                </a> --}}
                                             </td>
                                         </tr>
-
-                                        {{-- /Modal Start/ --}}
-                                        <!-- Button trigger modal -->
-
-                                        <!-- Modal -->
-                                        {{-- <div class="modal fade modal-lg" id="exampleModal{{$product->id}}"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center border">
-                        <div class="row">
-                        @for ($i = 0; $i < $product->stock; $i++)
-                        <div class="col-md-4">
-                        <div class="barcode-container">
-                            <span class="dblock">
-                            {!! DNS1D::getBarcodeHTML($product->barcode, 'PHARMA') !!}</span><br>
-                            <span style="">{{$product->barcode}}</span><br>
-                            <span>{{ $product->name ?? '' }} </span><br>
-                            <span class="bold">{{ $product->price ?? 0 }}TK</span>
-                        </div>
-                    </div>
-                        @endfor
-                    </div>
-                </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button onclick="printModalContent('modalContent{{$product->id}}')" class="btn btn-primary">Print</button>
-                    </div>
-                </div>
-                </div>
-            </div> --}}
-                                        {{-- /Modal End/ --}}
                                     @endforeach
+                                @else
+                                    <tr>
+                                        <td>No Data Found</td>
+                                    </tr>
                                 @endif
-
                             </tbody>
                         </table>
                     </div>
@@ -125,18 +79,6 @@
             </div>
         </div>
     </div>
-    <script>
-        function printModalContent(modalId) {
-            var modalBodyContent = document.getElementById(modalId).getElementsByClassName('modal-body')[0].innerHTML;
-            var printWindow = window.open('', '_blank');
-            printWindow.document.write(
-                '<html><head><title>Print</title><link rel="stylesheet" type="text/css" href="print.css" /></head><body>' +
-                modalBodyContent + '</body></html>');
-            printWindow.document.close();
-            printWindow.print();
-
-        }
-    </script>
     <style>
         .barcode-container {
             text-align: center;

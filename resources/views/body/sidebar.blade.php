@@ -6,7 +6,7 @@
             @else
                 EIL<span>POS</span>
             @endif --}}
-            <img src="{{ asset('/Logo-2.png') }}" alt="" height="40">
+        <img src="{{ asset('/Logo-2.png') }}" alt="" height="40">
         </a>
         <div class="sidebar-toggler not-active">
             <span></span>
@@ -105,6 +105,11 @@
                                         Products</a>
                                 </li>
                             @endif
+                            <li class="nav-item">
+                                <a href="{{ route('product.via') }}"
+                                    class="nav-link {{ request()->routeIs('product.via') ? 'nav_active' : '' }}">Via
+                                    Products</a>
+                            </li>
                             @if (Auth::user()->can('category.menu'))
                                 <li class="nav-item">
                                     <a href="{{ route('product.category') }}"

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\PosSetting;
 use App\Models\Product;
 use App\Models\PromotionDetails;
@@ -81,16 +82,42 @@ class ProductsController extends Controller
             ]);
         }
     }
+
+    // product manage 
     public function view()
     {
-        if (Auth::user()->id == 1) {
-            $products = Product::all();
-        } else {
-            $products = Product::where('branch_id', Auth::user()->branch_id)->latest()->get();
+        $category = Category::where('slug', 'via-sell')->first();
+        $query = Product::orderBy('stock', 'asc');
+
+        if (Auth::user()->id != 1) {
+            $query->where('branch_id', Auth::user()->branch_id);
         }
+
+        if ($category) {
+            $query->where('category_id', '!=', $category->id);
+        }
+
+        $products = $query->get();
 
         return view('pos.products.product.product-show', compact('products'));
     }
+
+    // via product 
+    public function viaProductsView()
+    {
+        $category = Category::where('slug', 'via-sell')->first();
+        if (Auth::user()->id == 1) {
+            $products = Product::where('category_id', $category->id)->latest()->get();
+        } else {
+            $products = Product::where('branch_id', Auth::user()->branch_id)
+                ->where('category_id', $category->id)
+                ->latest()
+                ->get();
+        }
+
+        return view('pos.products.product.via_products', compact('products'));
+    }
+
     public function edit($id)
     {
         $product = Product::findOrFail($id);
