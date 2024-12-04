@@ -22,7 +22,7 @@
                     @foreach ($displayItems as $items)
                         <li>
                             <a
-                                href="{{ route('product.ledger', $items->product->id) }}">{{ $items->product->name ?? '' }}</a>
+                                href="{{ route('product.ledger', $items->product_id) }}">{{ $items->product->name ?? '' }}</a>
                         </li>
                     @endforeach
 

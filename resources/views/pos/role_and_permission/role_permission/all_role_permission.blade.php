@@ -46,9 +46,12 @@
                                     </a>
                                     @endif
                             @if(Auth::user()->can('role-and-permission-check-role-permission.delete'))
+                                     @if ($data->id == 1 || $data->id == 4)
+                                    @else
                                     <a href="{{route('admin.role.delete',$data->id)}}" id="delete" class="btn btn-sm btn-danger btn-icon" title="Delete">
                                         <i data-feather="trash-2"></i>
                                     </a>
+                                    @endif
                                     @endif
                                 </td>
                                         </tr>

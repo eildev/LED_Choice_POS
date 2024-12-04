@@ -200,13 +200,13 @@ class TransactionController extends Controller
                         'others_id' => $request->account_id,
                     ]);
                     $investor = Investor::findOrFail($request->account_id);
-                    $currentBalance = $investor->wallet_balance;
+                    $currentBalance = $investor->balance;
                     $newBalance = $currentBalance  - $request->amount;
                     $oldDebit = $investor->debit  + $request->amount;
                     $investor->update([
                         'type' => $request->type,
                         'debit' =>  $oldDebit,
-                        'wallet_balance' => $newBalance,
+                        'balance' => $newBalance,
                     ]);
                     // account transaction
                     $accountTransaction = new AccountTransaction;

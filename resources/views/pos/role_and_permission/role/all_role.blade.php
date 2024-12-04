@@ -37,9 +37,11 @@
                                     </a>
                                     @endif
                                     @if(Auth::user()->can('role-and-permission.all-role.delete'))
+                                      @if($data->id !== 1)
                                     <a href="{{route('role.delete',$data->id)}}" id="delete" class="btn btn-sm btn-danger btn-icon" title="Delete">
                                         <i data-feather="trash-2"></i>
                                     </a>
+                                    @endif
                                     @endif
                                 </td>
                                         </tr>

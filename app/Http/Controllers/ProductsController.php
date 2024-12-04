@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\PosSetting;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\PromotionDetails;
 use App\Models\PurchaseItem;
@@ -82,8 +82,7 @@ class ProductsController extends Controller
             ]);
         }
     }
-
-    // product manage 
+     // product manage 
     public function view()
     {
         $category = Category::where('slug', 'via-sell')->first();
@@ -117,7 +116,7 @@ class ProductsController extends Controller
 
         return view('pos.products.product.via_products', compact('products'));
     }
-
+    
     public function edit($id)
     {
         $product = Product::findOrFail($id);

@@ -411,8 +411,8 @@
 
                         $('#account-details').text('Name: ' + data.info.name);
                         $('#due_invoice_count').text('Due Invoice Count: ' + data.count);
-                        if (data.info.wallet_balance > 0) {
-                            $('#total_due').text(`Total Due:  ${data.info.wallet_balance}`);
+                        if (data.info.balance > 0) {
+                            $('#total_due').text(`Total Due:  ${data.info.balance}`);
                         } else {
                             $('#total_due').text('Total Due: 0');
                         }

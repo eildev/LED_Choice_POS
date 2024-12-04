@@ -75,7 +75,7 @@
                                                 <td class="text-start">{{ $index + 1 }}</td>
                                                 <td class="text-start">
                                                     <a
-                                                        href="{{ route('product.ledger', $product->product->id) }}">{{ $product->product->name ?? '' }}</a>
+                                                        href="{{ route('product.ledger', $product->product_id) }}">{{ $product->product->name ?? '' }}</a>
                                                 </td>
                                                 <td>{{ $product->wa_duration ?? 0 }}</td>
                                                 <td>{{ $product->rate ?? 0 }}</td>

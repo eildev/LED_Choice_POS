@@ -194,7 +194,25 @@
     </div>
     <!-- Custom JS for this page -->
 
+<script>
+      const passwordInput = document.getElementById('userPassword');
+        const togglePassword = document.getElementById('togglePassword');
+        const icon = togglePassword.querySelector('i'); // Select the icon element inside the div
 
+        togglePassword.addEventListener('click', function() {
+            const isPasswordVisible = passwordInput.getAttribute('type') === 'text';
+
+            // Toggle password field visibility
+            passwordInput.setAttribute('type', isPasswordVisible ? 'password' : 'text');
+            console.log(passwordInput);
+            // Toggle the icon's data-feather attribute
+            icon.setAttribute('data-feather', isPasswordVisible ? 'eye' : 'eye-off');
+            console.log(icon);
+            // Re-render Feather icons to update the UI
+            feather.replace();
+            console.log(icon);
+        });
+</script>
     <!-- core:js -->
     <script src="../../../assets/vendors/core/core.js"></script>
     <!-- endinject -->
