@@ -1,6 +1,14 @@
 @extends('master')
 @section('title', '| Sale')
 @section('admin')
+<style>
+    .via_product_name:disabled {
+    background-color: #0C1427; /* Dark background */
+    color: #aaa; /* Light text color */
+    border: 1px solid #172442; /* Subtle border */
+    cursor: not-allowed; /* Indicates it's disabled */
+}
+</style>
     <div class="row mt-0">
         <div class="col-lg-12 grid-margin stretch-card mb-3">
             <div class="card">
@@ -320,9 +328,52 @@
                             <label for="name" class="form-label">Product Name <span
                                     class="text-danger">*</span></label>
                             <input id="defaultconfig" class="form-control product_name" maxlength="255" name="name"
-                                type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
+                                type="text" onkeyup="toggleFields('input');" onblur="toggleFields('input');">
                             <span class="text-danger product_name_error"></span>
                         </div>
+                        @php
+                            $viaProducts = App\Models\ViaProduct::get();
+                        @endphp
+                        <div class="mb-3 col-md-6">
+                            <label for="via_product_name" class="form-label">
+                                Via Product Select <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select via_product_name" data-width="100%" name="via_product_name"
+                                id="viaProductSelect" onchange="toggleFields('select');">
+                                <option selected disabled>Select Via Product</option>
+                                @foreach ($viaProducts as $viaProduct)
+                                    <option value="{{ $viaProduct->id }}">{{ $viaProduct->product_name }}</option>
+                                @endforeach
+                            </select>
+                            <button type="button" class="btn " onclick="resetViaProductSelect()">Unselect</button>
+                            <span class="text-danger via_product_name_error"></span>
+                        </div>
+                        <script>
+                            function toggleFields(trigger) {
+                                const inputField = document.querySelector('.product_name');
+                                const selectField = document.querySelector('.via_product_name');
+
+                                if (trigger === 'input' && inputField.value.trim() !== '') {
+                                    // If input is filled, disable the select field and clear its value
+                                    selectField.value = '';
+                                    selectField.disabled = true;
+                                } else if (trigger === 'select' && selectField.value !== '') {
+                                    // If an option in select is chosen, disable the input field and clear its value
+                                    inputField.value = '';
+                                    inputField.disabled = true;
+                                } else {
+                                    // Enable both fields if both are empty
+                                    inputField.disabled = false;
+                                    selectField.disabled = false;
+                                }
+                            }
+
+                            function resetViaProductSelect() {
+                                const selectField = document.getElementById('viaProductSelect');
+                                selectField.value = ''; // Reset the value to default
+                                toggleFields('select'); // Optionally call the toggle function to handle dependent logic
+                            }
+                        </script>
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Sell Price <span
                                     class="text-danger">*</span></label>
@@ -345,15 +396,15 @@
                             <span class="text-danger via_quantity_error"></span>
                         </div>
                         @php
-                            $suppliers  = App\Models\Supplier::get();
+                            $suppliers = App\Models\Supplier::get();
                         @endphp
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Supplier Name</label>
                             <select class="form-select via_supplier_name" data-width="100%" name="via_supplier_name">
-                                    <option selected disabled>Select Supplier</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                    @endforeach
+                                <option selected disabled>Select Supplier</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                @endforeach
                             </select>
                             {{-- <input id="defaultconfig" class="form-control via_supplier_name" name="via_supplier_name"
                                 type="text"> --}}
@@ -528,6 +579,9 @@
                             if (res.error.name) {
                                 showError('.product_name', res.error.name);
                             }
+                            // if (res.error.product_name) {
+                            //     showError('.via_product_name', res.error.product_name);
+                            // }
                             if (res.error.cost) {
                                 showError('.cost_price', res.error.cost);
                             }
@@ -710,7 +764,7 @@
                                                 `<span class="discount_amount${product.id} mt-2">${promotion.discount_value}</span>Tk`
                                         : `<span class="mt-2">00</span>`
                                     : `<input type="number" product-id="${product.id}" class="form-control product_discount${product.id} discountProduct" name="product_discount"  value="" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
                                 }
                             </td>
                             <td>

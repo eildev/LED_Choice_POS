@@ -17,6 +17,7 @@ use App\Models\SubCategory;
 use App\Models\Transaction;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\ViaProduct;
 use App\Models\ViaSale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -773,12 +774,23 @@ class SaleController extends Controller
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
+            // 'name' => 'required|max:255',
+            // 'product_name' => 'required|max:255',
+            // 'name' => [
+            //     'nullable', // Name is optional if product_name is provided
+            //     'max:255',
+            //     'required_without:product_name', // Name is required only if product_name is empty
+            // ],
+            // 'product_name' => [
+            //     'nullable', // Product Name is optional if name is provided
+            //     'exists:via_products,id', // Validates the selected product_name exists in the database
+            //     'required_without:name', // Product Name is required only if name is empty
+            // ],
             'price' => 'required',
             'cost' => 'required',
             'stock' => 'required',
             'transaction_account' => 'required',
-        ]);
+        ],  );
 
         if ($validator->passes()) {
             $oldBalance = AccountTransaction::where('account_id', $request->transaction_account)->latest('created_at')->first();
@@ -787,8 +799,20 @@ class SaleController extends Controller
 
                 $maxBarcode = Product::where('branch_id', Auth::user()->branch_id)
                     ->max('barcode');
+
                 $product = new Product;
-                $product->name =  $request->name;
+                $viaSale = new ViaSale;
+                if($request->name){
+                    $viaProduct = new ViaProduct;
+                    $viaProduct->product_name = $request->name;
+                    $viaProduct->save();
+                    $product->name =  $request->name;
+                    $viaSale->via_product_id = $viaProduct->id;
+                }elseif($request->via_product_name){
+                    $viaProducts = ViaProduct::findOrFail($request->via_product_name);
+                    $product->name = $viaProducts->product_name;
+                    $viaSale->via_product_id = $request->via_product_name;
+                   }
                 $product->branch_id =  Auth::user()->branch_id;
                 if ($maxBarcode > 0) {
                     $product->barcode =  $maxBarcode + 1;
@@ -842,14 +866,20 @@ class SaleController extends Controller
                 $product->stock = $request->stock;
                 $product->save();
 
-                $viaSale = new ViaSale;
+                //Via salw
                 $viaSale->invoice_date = Carbon::now();
                 $viaSale->branch_id =  Auth::user()->branch_id;
                 $viaSale->invoice_number = $request->invoice_number;
                 $viaSale->processed_by = Auth::user()->id;
                 $viaSale->supplier_name = $request->via_supplier_name;
                 $viaSale->product_id = $product->id;
-                $viaSale->product_name = $request->name;
+                // if($request->name)
+                // // $viaSale->product_name = 'empty';
+                // else{
+                //     $viaSale->via_product_id = $request->via_product_id;
+                //  }
+
+
                 $viaSale->quantity = $request->stock;
                 $viaSale->cost_price = $request->cost;
                 $viaSale->sale_price = $request->price;
