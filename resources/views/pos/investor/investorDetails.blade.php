@@ -103,8 +103,8 @@
                                                 <th class="id">Invoice</th>
                                                 <th>Particulars</th>
                                                 <th>Total</th>
-                                                <th>Due</th>
-                                                <th>Paid</th>
+                                                <th>Debit</th>
+                                                <th>Credit</th>
                                                 <th>Balance</th>
                                                 <th class="id">Action</th>
                                             </tr>
@@ -119,127 +119,52 @@
                                                 @endphp
 
                                                 @foreach ($transactions as $transaction)
+                                                    @dd($transaction->balance)
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($transaction->date)->format('F j, Y') ?? '' }}
                                                         </td>
                                                         <td class="id">
-                                                            @php
-                                                                $particularData = $transaction->particularData();
-                                                                dd($particularData);
-                                                            @endphp
-                                                            @if ($particularData)
-                                                                @if ($particularData->invoice_number)
-                                                                    <a
-                                                                        href="{{ route('sale.invoice', $particularData->id) }}">
-                                                                        #{{ $particularData->invoice_number ?? 0 }}
-                                                                    </a>
-                                                                @else
-                                                                    <a
-                                                                        href="{{ route('return.products.invoice', $particularData->id) }}">
-                                                                        #{{ $particularData->return_invoice_number ?? 0 }}
-                                                                    </a>
-                                                                @endif
-                                                            @else
-                                                                <a
-                                                                    href="{{ route('investor.invoice', $transaction->id) }}">
-                                                                    #{{ rand(000000, 999999) }}
-                                                                </a>
-                                                            @endif
+                                                            <a
+                                                                href="{{ route('transaction.invoice.receipt', $transaction->id) }}">
+                                                                #{{ rand(000000, 999999) }}
+                                                            </a>
                                                         </td>
                                                         <td>
-                                                            @if ($transaction->particulars == 'Return' || $transaction->particulars == 'Adjust Due Collection')
-                                                                @if ($transaction->particulars == 'Adjust Due Collection')
-                                                                    Return
-                                                                @else
-                                                                    Cash Return
-                                                                @endif
-                                                            @elseif (strpos($transaction->particulars, 'Sale#') !== false)
-                                                                Sale
-                                                            @elseif ($transaction->particulars == 'SaleDue')
-                                                                Cash Deposit
-                                                            @elseif (strpos($transaction->particulars, 'Purchase#') !== false)
-                                                                Purchase
-                                                            @elseif ($transaction->particulars == 'PurchaseDue')
-                                                                Due Payment
-                                                            @else
-                                                                {{ $transaction->particulars ?? '' }}
-                                                            @endif
+                                                            {{ $transaction->particulars ?? '' }}
                                                         </td>
                                                         <td>
-                                                            @if ($transaction->particulars == 'Return' || $transaction->particulars == 'Adjust Due Collection')
-                                                                @if ($transaction->particulars == 'Adjust Due Collection')
-                                                                    {{ number_format($transaction->credit, 2) ?? 0 }}
-                                                                @else
-                                                                    {{ number_format($transaction->debit, 2) ?? 0 }}
-                                                                @endif
-                                                            @elseif ($transaction->particulars == 'SaleDue' || $transaction->particulars == 'PurchaseDue')
+                                                            @if ($transaction->credit)
                                                                 {{ number_format($transaction->credit, 2) ?? 0 }}
                                                             @else
                                                                 {{ number_format($transaction->debit, 2) ?? 0 }}
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            @if ($transaction->particulars == 'Return' || $transaction->particulars == 'Adjust Due Collection')
-                                                                00
-                                                            @else
-                                                                @if ($transaction->debit > $transaction->credit)
-                                                                    {{ number_format($transaction->debit - $transaction->credit, 2) ?? 0 }}
-                                                                @else
-                                                                    00
-                                                                @endif
-                                                            @endif
+                                                            {{ number_format($transaction->debit, 2) ?? 0 }}
                                                         </td>
                                                         <td>
-                                                            @if ($transaction->particulars == 'Return')
-                                                                00
-                                                            @else
-                                                                {{ number_format($transaction->credit, 2) ?? 0 }}
-                                                            @endif
+                                                            {{ number_format($transaction->credit, 2) ?? 0 }}
                                                         </td>
 
                                                         <td>
-                                                            @if ($transaction->particulars == 'Return')
-                                                                00
-                                                            @else
-                                                                @if ($transaction->balance > 0)
-                                                                    <span class="text-danger">
-                                                                        {{ number_format(-$transaction->balance, 2) ?? 0 }}</span>
-                                                                @else
-                                                                    <span>
-                                                                        {{ number_format(-$transaction->balance, 2) ?? 0 }}
-                                                                    </span>
-                                                                @endif
-                                                                @php
-                                                                    $totalBalance += $transaction->balance ?? 0;
-                                                                    $totalDebit += $transaction->debit ?? 0;
-                                                                    $totalCredit += $transaction->credit ?? 0;
-                                                                @endphp
-                                                            @endif
+
+                                                            {{ number_format($transaction->balance, 2) ?? 0 }}
+
                                                         </td>
                                                         <td class="id">
-                                                            @if ($particularData)
-                                                                @if ($particularData->invoice_number)
-                                                                    <a href="#"
-                                                                        class="btn-sm btn-outline-primary float-end print"
-                                                                        data-id="{{ $particularData->id }}" type="sale">
-                                                                        <i data-feather="printer" class="me-2 icon-md"></i>
-                                                                    </a>
-                                                                @else
-                                                                    <a href="#"
-                                                                        class="btn-sm btn-outline-primary float-end print"
-                                                                        data-id="{{ $particularData->id }}" type="return">
-                                                                        <i data-feather="printer" class="me-2 icon-md"></i>
-                                                                    </a>
-                                                                @endif
-                                                            @else
-                                                                <a href="#"
-                                                                    class="btn-sm btn-outline-primary float-end print"
-                                                                    data-id="{{ $transaction->id }}" type="transaction">
-                                                                    <i data-feather="printer" class="me-2 icon-md"></i>
-                                                                </a>
-                                                            @endif
+                                                            <a href="#"
+                                                                class="btn-sm btn-outline-primary float-end print"
+                                                                data-id="{{ $transaction->id }}" type="transaction">
+                                                                <i data-feather="printer" class="me-2 icon-md"></i>
+                                                            </a>
                                                         </td>
                                                     </tr>
+
+                                                    @php
+                                                        $totalBalance += $transaction->balance ?? 0;
+                                                        $totalDebit += $transaction->debit ?? 0;
+                                                        $totalCredit += $transaction->credit ?? 0;
+                                                    @endphp
                                                 @endforeach
                                                 <tr>
                                                     <td class="id"></td>
@@ -249,13 +174,7 @@
                                                     <td> {{ number_format($totalDebit, 2) }}</td>
                                                     <td> {{ number_format($totalCredit, 2) }}</td>
                                                     <td>
-                                                        @if ($totalBalance > 0)
-                                                            <span
-                                                                class="text-danger">{{ number_format(-$totalBalance, 2) }}</span>
-                                                        @else
-                                                            <span>{{ number_format(-$totalBalance, 2) }}</span>
-                                                        @endif
-                                                    </td>
+                                                        {{ number_format($totalBalance, 2) }} </td>
                                                     <td></td>
                                                 </tr>
                                             @else
@@ -487,7 +406,7 @@
             } else if (type == 'purchase') {
                 var printContentUrl = '/purchase/invoice/' + id;
             } else {
-                var printContentUrl = '/get/invoice/' + id;
+                var printContentUrl = '/transaction/invoice/receipt/' + id;
             }
 
             $('#printFrame').attr('src', printContentUrl);

@@ -473,7 +473,10 @@ class TransactionController extends Controller
     {
         $investor = Investor::findOrFail($id);
         $branch = Branch::findOrFail($investor->branch_id);
-        $transactions = Transaction::where('others_id', $id)->get();
+        $transactions = Transaction::where(function ($query) {
+            $query->where('particulars', 'OthersPayment')
+                ->orWhere('particulars', 'OthersReceive');
+        })->where('others_id', $id)->get();
         $banks = Bank::get();
         return view('pos.investor.investorDetails', compact('investor', 'branch', 'transactions', 'banks'));
     }
