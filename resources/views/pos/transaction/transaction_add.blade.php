@@ -63,7 +63,10 @@
                                                 @foreach ($investors as $key => $investor)
                                                     <tr>
                                                         <td>{{ $key + 1 }}</td>
-                                                        <td>{{ $investor->name ?? '' }}</td>
+                                                        <td>
+                                                            <a
+                                                                href="{{ route('investor.details', $investor->id) }}">{{ $investor->name ?? '' }}</a>
+                                                        </td>
                                                         @php
                                                             $dacTimeZone = new DateTimeZone('Asia/Dhaka');
                                                             $created_at = optional($investor->created_at)->setTimezone(
@@ -225,7 +228,7 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-6 d-none">
-                                        <div class="mb-3 form-valid-groups " >
+                                        <div class="mb-3 form-valid-groups ">
                                             <label class="form-label">Account Type<span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select" data-width="100%" name="account_type"
@@ -253,8 +256,7 @@
 
                                     <div class="col-sm-6 d-none" id="investment-col">
                                         <div class="mb-3 form-valid-groups">
-                                            <label class="form-label">Purpose <span
-                                                    class="text-danger">*</span></label>
+                                            <label class="form-label">Purpose <span class="text-danger">*</span></label>
                                             <select class="form-select" data-width="100%" name="type" id=""
                                                 aria-invalid="false">
                                                 <option selected="" disabled value="">Select Type</option>
@@ -373,57 +375,57 @@
     <script>
         $(document).ready(function() {
 
-                    viewInvestor();
-                    //
-                    let transactionTypeElement = document.getElementById('transaction_type');
-                    transactionTypeElement.removeAttribute('disabled');
-                    transactionTypeElement.style.backgroundColor = 'transparent !important';
-                    //
-                    let investmentCol = document.getElementById('investment-col');
-                    investmentCol.classList.remove('d-none');
-                    let investmentCol2 = document.getElementById('investment-col2');
-                    investmentCol2.classList.remove('d-none');
+            viewInvestor();
+            //
+            let transactionTypeElement = document.getElementById('transaction_type');
+            transactionTypeElement.removeAttribute('disabled');
+            transactionTypeElement.style.backgroundColor = 'transparent !important';
+            //
+            let investmentCol = document.getElementById('investment-col');
+            investmentCol.classList.remove('d-none');
+            let investmentCol2 = document.getElementById('investment-col2');
+            investmentCol2.classList.remove('d-none');
 
-                    $(document).on('change', '#transaction_type', function() {
-                    let transactionType = $(this).val();
+            $(document).on('change', '#transaction_type', function() {
+                let transactionType = $(this).val();
 
-                    // Show account-info section if the selected option is "pay"
-                    if (transactionType === 'pay') {
-                        $('.account-info').show();
-                    } else {
-                        $('.account-info').hide();
-                    }
-                });
-                    $(document).on('change', '.select-account-id', function() {
-                        let accountId = this.value;
-                        // console.log(accountId);
-                        let transactionType = $('#transaction_type').val(); // Get the current transaction type
-                        let account_type = document.querySelector('#account_type').value;
-                        if (transactionType === 'pay') {
-                $.ajax({
-                    url: '/getDataForAccountId',
-                    method: 'GET',
-                    data: {
-                        id: accountId,
-                        account_type
-                    },
-                    success: function(data) {
+                // Show account-info section if the selected option is "pay"
+                if (transactionType === 'pay') {
+                    $('.account-info').show();
+                } else {
+                    $('.account-info').hide();
+                }
+            });
+            $(document).on('change', '.select-account-id', function() {
+                let accountId = this.value;
+                // console.log(accountId);
+                let transactionType = $('#transaction_type').val(); // Get the current transaction type
+                let account_type = document.querySelector('#account_type').value;
+                if (transactionType === 'pay') {
+                    $.ajax({
+                        url: '/getDataForAccountId',
+                        method: 'GET',
+                        data: {
+                            id: accountId,
+                            account_type
+                        },
+                        success: function(data) {
 
-                        $('#account-details').text('Name: ' + data.info.name);
-                        $('#due_invoice_count').text('Due Invoice Count: ' + data.count);
-                        if (data.info.balance > 0) {
-                            $('#total_due').text(`Total Due:  ${data.info.balance}`);
-                        } else {
-                            $('#total_due').text('Total Due: 0');
+                            $('#account-details').text('Name: ' + data.info.name);
+                            $('#due_invoice_count').text('Due Invoice Count: ' + data.count);
+                            if (data.info.balance > 0) {
+                                $('#total_due').text(`Total Due:  ${data.info.balance}`);
+                            } else {
+                                $('#total_due').text('Total Due: 0');
+                            }
+                            $('.account-info').show();
+                        },
+                        error: function(xhr, status, error) {
+                            // Error handling
+                            console.error('Request failed:', error);
                         }
-                        $('.account-info').show();
-                    },
-                    error: function(xhr, status, error) {
-                        // Error handling
-                        console.error('Request failed:', error);
-                    }
-                });
-            } else {
+                    });
+                } else {
                     $('.account-info').hide(); // Hide if not 'pay'
                 }
             })

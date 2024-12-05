@@ -45,6 +45,8 @@ class Transaction extends Model
             // Check for specific cases like 'Adjust Due Collection' or 'Return'
         } elseif (strpos($particulars, 'Adjust Due Collection') !== false || strpos($particulars, 'Return') !== false) {
             return Returns::find($this->others_id); // Match with others_id and return return data
+        } elseif (strpos($particulars, 'OthersReceive') !== false || strpos($particulars, 'OthersPayment') !== false) {
+            return Investor::find($this->others_id);
         }
 
         // Default case: return null if no match
