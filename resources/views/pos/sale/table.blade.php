@@ -105,10 +105,10 @@
                                     style="transform: rotate(90deg);" class="fa-solid fa-arrow-turn-down me-2"></i></i>
                                 Return</a>
                         @endif
-                        @if (Auth::user()->can('pos-manage.delete'))
+                        {{-- @if (Auth::user()->can('pos-manage.delete'))
                             <a class="dropdown-item" id="delete" href="{{ route('sale.destroy', $data->id) }}"><i
                                     class="fa-solid fa-trash-can me-2"></i>Delete</a>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </td>

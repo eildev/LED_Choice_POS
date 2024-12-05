@@ -9,4 +9,8 @@ class ViaSale extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_name', 'id');
+    } //
 }

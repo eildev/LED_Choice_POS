@@ -344,10 +344,19 @@
                                 type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger via_quantity_error"></span>
                         </div>
+                        @php
+                            $suppliers  = App\Models\Supplier::get();
+                        @endphp
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Supplier Name</label>
-                            <input id="defaultconfig" class="form-control via_supplier_name" name="via_supplier_name"
-                                type="text">
+                            <select class="form-select via_supplier_name" data-width="100%" name="via_supplier_name">
+                                    <option selected disabled>Select Supplier</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    @endforeach
+                            </select>
+                            {{-- <input id="defaultconfig" class="form-control via_supplier_name" name="via_supplier_name"
+                                type="text"> --}}
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Total</label>
