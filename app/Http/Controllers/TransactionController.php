@@ -6,6 +6,7 @@ use App\Models\Bank;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\AccountTransaction;
+use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Customer;
 use App\Models\Purchase;
@@ -13,6 +14,7 @@ use App\Models\Investor;
 use Carbon\Carbon;
 use App\Models\Sale;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 
@@ -465,5 +467,17 @@ class TransactionController extends Controller
                 'error' => $validator->messages()
             ]);
         }
+    }
+
+    public function investorDetails($id)
+    {
+        $investor = Investor::findOrFail($id);
+        $branch = Branch::findOrFail($investor->branch_id);
+        $transactions = Transaction::where(function ($query) {
+            $query->where('particulars', 'OthersPayment')
+                ->orWhere('particulars', 'OthersReceive');
+        })->where('others_id', $id)->get();
+        $banks = Bank::get();
+        return view('pos.investor.investorDetails', compact('investor', 'branch', 'transactions', 'banks'));
     }
 }
