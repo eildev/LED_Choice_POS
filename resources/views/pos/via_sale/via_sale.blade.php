@@ -35,7 +35,8 @@
                                     @foreach ($viaSale as $key => $via)
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
-                                            <td>{{ $via->supplier_name ?? '' }}</td>
+                                            <td>{{ is_numeric($via->supplier_name) ? $via->supplier->name ?? '' : $via->supplier_name }}
+                                            </td>
                                             <td>{{ $via->product_name ?? '' }}</td>
                                             <td>{{ $via->quantity ?? 0 }}</td>
                                             <td>{{ $via->cost_price ?? 0 }}</td>
