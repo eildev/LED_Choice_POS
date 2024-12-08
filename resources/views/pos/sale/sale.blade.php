@@ -1,14 +1,18 @@
 @extends('master')
 @section('title', '| Sale')
 @section('admin')
-<style>
-    .via_product_name:disabled {
-    background-color: #0C1427; /* Dark background */
-    color: #aaa; /* Light text color */
-    border: 1px solid #172442; /* Subtle border */
-    cursor: not-allowed; /* Indicates it's disabled */
-}
-</style>
+    <style>
+        .via_product_name:disabled {
+            background-color: #0C1427;
+            /* Dark background */
+            color: #aaa;
+            /* Light text color */
+            border: 1px solid #172442;
+            /* Subtle border */
+            cursor: not-allowed;
+            /* Indicates it's disabled */
+        }
+    </style>
     <div class="row mt-0">
         <div class="col-lg-12 grid-margin stretch-card mb-3">
             <div class="card">
@@ -562,7 +566,7 @@
                             $('.viaSellForm')[0].reset();
                             viewViaSell();
                             let products = res.products;
-                            let quantity = products.stock;
+                            let quantity = products.quantity;
                             // console.log(quantity);
                             showAddProduct(products, quantity);
                             updateGrandTotal();
@@ -723,15 +727,16 @@
                     let newQuantity = currentQuantity + 1;
                     quantityInput.val(newQuantity);
                 } else {
+                    // console.log(product);
                     // If the row doesn't exist, add a new row
                     $('.showData').append(
-                        `<tr class="data_row${product.id}">
+                        `<tr class="data_row${product.id}" data-type='${product.name ? 'product' : 'via'}'>
                             <td>
-                                <input type="text" class="form-control product_name${product.id} border-0 "  name="product_name[]" readonly value="${product.name ?? ""}" />
+                                <input type="text" class="form-control product_name${product.id} border-0"  name="product_name[]" readonly value="${product.name ?? product.via_product.product_name ?? ''}" />
                             </td>
                             <td>
                                 <input type="hidden" class="product_id" name="product_id[]" readonly value="${product.id ?? 0}"  />
-                                <input type="number" product-id="${product.id}" class="form-control unit_price product_price${product.id} ${checkSellEdit == 0 ? 'border-0' : ''}" id="product_price" name="unit_price[]" ${checkSellEdit == 0 ? 'readonly' : ''} value="${product.price ?? 0}" />
+                                <input type="number" product-id="${product.id}" class="form-control unit_price product_price${product.id} ${checkSellEdit == 0 ? 'border-0' : ''}" id="product_price" name="unit_price[]" ${checkSellEdit == 0 ? 'readonly' : ''} value="${product.price ?? product.sale_price ?? 0}" />
                             </td>
                             <td>
                                 <input type="number" product-id="${product.id}" class="form-control quantity productQuantity${product.id}" name="quantity[]" value="${quantity1}" />
@@ -764,7 +769,7 @@
                                                 `<span class="discount_amount${product.id} mt-2">${promotion.discount_value}</span>Tk`
                                         : `<span class="mt-2">00</span>`
                                     : `<input type="number" product-id="${product.id}" class="form-control product_discount${product.id} discountProduct" name="product_discount"  value="" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
                                 }
                             </td>
                             <td>
@@ -775,7 +780,7 @@
                                             :
                                             `<input type="number" class="form-control product_subtotal${product.id} border-0" name="total_price[]" id="productTotal" readonly value="${product.price - promotion.discount_value}" />`
                                         :
-                                        `<input type="number" class="form-control product_subtotal${product.id} border-0" name="total_price[]" id="productTotal" readonly value="${product.price * quantity1}" />`
+                                        `<input type="number" class="form-control product_subtotal${product.id} border-0" name="total_price[]" id="productTotal" readonly value="${(product.price ?? product.sale_price ?? 0) * quantity1}" />`
                                 }
                             </td>
                             <td style="padding-top: 20px;">
@@ -1166,6 +1171,8 @@
                     // console.log(productDiscount);
                     let product_discount = discount_amount || discount_percentage ? (discount_amount ?
                         discount_amount : discount_percentage) : (productDiscount ? productDiscount : 0);
+
+                    let dataType = $(attr).data('type');
                     let product = {
                         product_id,
                         quantity,
@@ -1173,7 +1180,8 @@
                         wa_status,
                         wa_duration,
                         product_discount,
-                        total_price
+                        total_price,
+                        dataType
                     };
 
                     // Push the object into the products array
