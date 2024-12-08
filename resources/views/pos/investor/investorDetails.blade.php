@@ -45,14 +45,7 @@
                             <p class="show_branch_phone">{{ $branch->phone ?? '' }}</p>
                         </div>
                         <div>
-                            @if ($investor->balance > 0)
-                                <button type="button"
-                                    class="btn btn-outline-primary btn-icon-text float-left add_money_modal"
-                                    id="payment-btn" data-bs-toggle="modal" data-bs-target="#duePayment">
-                                    <i class="btn-icon-prepend" data-feather="credit-card"></i>
-                                    Payment
-                                </button>
-                            @endif
+
                             <button type="button"
                                 class="btn btn-outline-primary btn-icon-text me-2 mb-2 mb-md-0 print-btn">
                                 <i class="btn-icon-prepend" data-feather="printer"></i>

@@ -181,15 +181,10 @@ class TransactionController extends Controller
         //     return redirect()->back()->with($notification);
         // } else
         if ($request->account_type == 'other') {
-            // dd($request->transaction_type);
-            $tracsBalances = Transaction::where('others_id', $request->account_id)->latest()->first();
-            $currentBalance = $tracsBalances->balance ?? 0;
             $oldBalance = AccountTransaction::where('account_id', $request->payment_method)->latest('created_at')->first();
             if ($request->transaction_type == 'pay') {
                 if ($oldBalance && $oldBalance->balance > 0 && $oldBalance->balance >= $request->amount) {
-                    $payBalance = $currentBalance - $request->amount;
-                    // dd($currentBalance - $request->amount);
-                    $transaction = Transaction::create([
+                    Transaction::create([
                         'branch_id' => Auth::user()->branch_id,
                         'date' => $request->date,
                         'processed_by' => Auth::user()->id,
@@ -198,7 +193,7 @@ class TransactionController extends Controller
                         'debit' => $request->amount,
                         'payment_method' => $request->payment_method,
                         'note' => $request->note,
-                        'balance' => $payBalance,
+                        'balance' => $request->amount,
                         'others_id' => $request->account_id,
                     ]);
                     $investor = Investor::findOrFail($request->account_id);
@@ -234,8 +229,7 @@ class TransactionController extends Controller
                     return redirect()->back()->with($notification);
                 }
             } else if ($request->transaction_type == 'receive') {
-                $receiveBalance = $currentBalance + $request->amount;
-                $transaction = Transaction::create([
+                Transaction::create([
                     'branch_id' => Auth::user()->branch_id,
                     'date' => $request->date,
                     'processed_by' => Auth::user()->id,
@@ -244,7 +238,7 @@ class TransactionController extends Controller
                     'credit' => $request->amount,
                     'payment_method' => $request->payment_method,
                     'note' => $request->note,
-                    'balance' => $receiveBalance,
+                    'balance' => -$request->amount,
                     'others_id' => $request->account_id,
                 ]);
                 $investor = Investor::findOrFail($request->account_id);

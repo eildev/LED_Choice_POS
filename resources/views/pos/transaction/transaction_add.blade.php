@@ -116,7 +116,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -320,7 +319,6 @@
                                         </div>
                                     </div><!-- Col -->
                                 </div><!-- Row -->
-
                                 <div>
                                     <input type="submit" class="btn btn-primary submit" value="Payment">
                                 </div>
