@@ -866,7 +866,8 @@ class SaleController extends Controller
                 $product->stock = $request->stock;
                 $product->save();
 
-                //Via salw
+                //Via sale
+
                 $viaSale->invoice_date = Carbon::now();
                 $viaSale->branch_id =  Auth::user()->branch_id;
                 $viaSale->invoice_number = $request->invoice_number;

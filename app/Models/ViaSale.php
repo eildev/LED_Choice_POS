@@ -13,4 +13,8 @@ class ViaSale extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_name', 'id');
     } //
+    public function viaProduct()
+    {
+        return $this->belongsTo(ViaProduct::class, 'via_product_id', 'id');
+    } //
 }

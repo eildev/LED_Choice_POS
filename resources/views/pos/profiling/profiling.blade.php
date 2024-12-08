@@ -110,7 +110,10 @@
                     </h4>
                     <div class="container-fluid w-100">
                         <div class="row">
+                            {{-- //col Start --}}
+
                             <div class="col-md-12">
+
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -303,6 +306,75 @@
                                     </table>
                                 </div>
                             </div>
+
+                            {{-- @endif --}}
+                            {{-- //End Col --}}
+                              @if (!$isCustomer)
+                              <h4>Via Sale</h4>
+                            <div class="col-md-12 mt-2">
+
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice Date</th>
+                                                <th>Product Name</th>
+                                                <th>Quantity</th>
+                                                <th>Cost Price</th>
+                                                <th>Sale Price</th>
+                                                <th>Sub total</th>
+                                                <th>Paid</th>
+                                                <th>Due</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @if ($viaSales->count() > 0)
+                                                @php
+                                                    $totalDebit = 0;
+                                                    $totalCredit = 0;
+                                                    $totalBalance = 0;
+                                                @endphp
+
+                                                @foreach ($viaSales as $viaSale)
+                                                    <tr>
+                                                        <td>{{ \Carbon\Carbon::parse($viaSale->invoice_date)->format('F j, Y') ?? '' }}
+                                                        </td>
+
+                                                        <td>
+                                                            {{ $viaSale->viaProduct->product_name ?? $viaSale->product_name ?? '' }}                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->quantity}}
+                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->cost_price}}
+                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->sale_price}}
+                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->sub_total}}
+                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->paid}}
+                                                        </td>
+                                                        <td>
+                                                            {{$viaSale->due}}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                            @else
+                                                <tr>
+                                                    <td colspan="7" class="text-center">No Data Found</td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                             @endif
+                            {{-- //End Col --}}
                         </div>
                     </div>
                 </div>
@@ -415,7 +487,7 @@
     </style>
 
     <script>
-        // Error Remove Function 
+        // Error Remove Function
         function errorRemove(element) {
             tag = element.tagName.toLowerCase();
             if (element.value != '') {
@@ -429,14 +501,14 @@
             }
         }
 
-        // Show Error Function 
+        // Show Error Function
         function showError(payment_balance, message) {
             $(payment_balance).css('border-color', 'red');
             $(payment_balance).focus();
             $(`${payment_balance}_error`).show().text(message);
         }
 
-        // due Show 
+        // due Show
         function dueShow() {
             let dueAmountText = document.getElementById('due-amount').innerText.trim();
             let dueAmount = parseFloat(dueAmountText.replace(/[^\d.-]/g, ''));

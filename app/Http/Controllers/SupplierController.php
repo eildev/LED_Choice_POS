@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\ViaSale;
 use Carbon\Carbon;
 // use Validator;
 use Illuminate\Support\Facades\Validator;
@@ -130,11 +131,11 @@ class SupplierController extends Controller
     public function SupplierProfile($id)
     {
         $data = Supplier::findOrFail($id);
+        $viaSales = ViaSale::where('supplier_name', $data->id)->get();
         $transactions = Transaction::where('supplier_id', $data->id)->get();
         $branch = Branch::findOrFail($data->branch_id);
         $banks = Bank::latest()->get();
         $isCustomer = false;
-
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
+        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks','viaSales'));
     }
-}
+}//End
