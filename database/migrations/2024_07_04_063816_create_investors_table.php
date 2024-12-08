@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->decimal('debit', 12, 2)->default(0);
             $table->decimal('credit', 12, 2)->default(0);
-            $table->decimal('wallet_balance', 14, 2)->default(0);
+            $table->decimal('balance', 14, 2)->default(0);
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
