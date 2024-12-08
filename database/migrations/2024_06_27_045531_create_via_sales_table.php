@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('processed_by')->nullable();
             $table->string('supplier_name')->nullable();
             $table->bigInteger('product_id')->nullable();
+            $table->bigInteger('via_product_id')->nullable();
             $table->string('product_name')->nullable();
             $table->integer('quantity')->nullable();
             $table->decimal('cost_price')->nullable();
