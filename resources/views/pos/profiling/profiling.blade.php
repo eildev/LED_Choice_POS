@@ -110,7 +110,7 @@
                     </h4>
                     <div class="container-fluid w-100">
                         <div class="row">
-                           <!-- //First col Start -->
+                            <!-- //First col Start -->
 
                             <div class="col-md-12">
 
@@ -307,80 +307,82 @@
                                 </div>
                             </div>
                             <!-- //End Col -->
-                              @if (!$isCustomer)
-                              <h4 style="text-align: center ;margin:10px">Via Sale</h4>
-                            <div class="col-md-12 mt-2">
+                            @if (!$isCustomer)
+                                <h4 style="text-align: center ;margin:10px">Via Sale</h4>
+                                <div class="col-md-12 mt-2">
 
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Invoice Date</th>
-                                                <th>Product Name</th>
-                                                <th>Quantity</th>
-                                                <th>Cost Price</th>
-                                                <th>Sale Price</th>
-                                                <th>Sub total</th>
-                                                <th>Paid</th>
-                                                <th>Due</th>
-                                                <th>Payment</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                            @if ($viaSales->count() > 0)
-                                                @php
-                                                    $totalDebit = 0;
-                                                    $totalCredit = 0;
-                                                    $totalBalance = 0;
-                                                @endphp
-
-                                                @foreach ($viaSales as $viaSale)
-                                                    <tr>
-                                                        <td>{{ \Carbon\Carbon::parse($viaSale->invoice_date)->format('F j, Y') ?? '' }}
-                                                        </td>
-
-                                                        <td>
-                                                            {{ $viaSale->viaProduct->product_name ?? $viaSale->product_name ?? '' }}                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->quantity ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->cost_price ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->sale_price ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->sub_total ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->paid ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            {{$viaSale->due ?? 00}}
-                                                        </td>
-                                                        <td>
-                                                            @if ($viaSale->due > 0)
-                                                            <a class="dropdown-item via_sale_add_payment" href="#"
-                                                                data-id="{{ $viaSale->id }}" data-bs-toggle="modal"
-                                                                data-bs-target="#viaSalePaymentModal"><i
-                                                                    class="fa-solid fa-credit-card me-2"></i> Payment</a>
-                                                        @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-
-                                            @else
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan="7" class="text-center">No Data Found</td>
+                                                    <th>Invoice Date</th>
+                                                    <th>Product Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Cost Price</th>
+                                                    <th>Sale Price</th>
+                                                    <th>Sub total</th>
+                                                    <th>Paid</th>
+                                                    <th>Due</th>
+                                                    <th>Payment</th>
                                                 </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+
+                                                @if ($viaSales->count() > 0)
+                                                    @php
+                                                        $totalDebit = 0;
+                                                        $totalCredit = 0;
+                                                        $totalBalance = 0;
+                                                    @endphp
+
+                                                    @foreach ($viaSales as $viaSale)
+                                                        <tr>
+                                                            <td>{{ \Carbon\Carbon::parse($viaSale->invoice_date)->format('F j, Y') ?? '' }}
+                                                            </td>
+
+                                                            <td>
+                                                                {{ $viaSale->viaProduct->product_name ?? ($viaSale->product_name ?? '') }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->quantity ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->cost_price ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->sale_price ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->sub_total ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->paid ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                {{ $viaSale->due ?? 00 }}
+                                                            </td>
+                                                            <td>
+                                                                @if ($viaSale->due > 0)
+                                                                    <a class="dropdown-item via_sale_add_payment"
+                                                                        href="#" data-id="{{ $viaSale->id }}"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#viaSalePaymentModal"><i
+                                                                            class="fa-solid fa-credit-card me-2"></i>
+                                                                        Payment</a>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td colspan="7" class="text-center">No Data Found</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                             @endif
+                            @endif
                             {{-- //End Col --}}
                         </div>
                     </div>
@@ -392,78 +394,79 @@
     <!-- Via Sale Payment Start -->
 
     <div class="modal fade" id="viaSalePaymentModal" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalScrollableTitle">Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="signupForm" class="paymentForm row">
-                    <div class="mb-3 col-md-12">
-                        <label for="name" class="form-label">Payment Date<span
-                                class="text-danger">*</span></label>
-                        <div class="input-group flatpickr" id="flatpickr-date">
-                            <input type="text" class="form-control from-date flatpickr-input payment_date"
-                                placeholder="Payment Date" data-input="" readonly="readonly" name="payment_date">
-                            <span class="input-group-text input-group-addon" data-toggle=""><svg
-                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2">
-                                    </rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg></span>
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalScrollableTitle">Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm" class="paymentForm row">
+                        <div class="mb-3 col-md-12">
+                            <label for="name" class="form-label">Payment Date<span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group flatpickr" id="flatpickr-date">
+                                <input type="text" class="form-control from-date flatpickr-input payment_date"
+                                    placeholder="Payment Date" data-input="" readonly="readonly" name="payment_date">
+                                <span class="input-group-text input-group-addon" data-toggle=""><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2">
+                                        </rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <label for="name" class="form-label">Transaction Account<span
-                                class="text-danger">*</span></label>
-                        @php
-                            $payments = App\Models\Bank::all();
-                        @endphp
-                        <select class="form-select transaction_account" data-width="100%"
-                            name="transaction_account" onclick="errorRemove(this);" onblur="errorRemove(this);">
-                            @if ($payments->count() > 0)
-                                @foreach ($payments as $payment)
-                                    <option value="{{ $payment->id }}">{{ $payment->name }}</option>
-                                @endforeach
-                            @else
-                                <option selected disabled>Please Add Payment</option>
-                            @endif
-                        </select>
-                        <span class="text-danger transaction_account_error"></span>
-                    </div>
-                    <div class="mb-3 col-md-6">
-                        <label for="name" class="form-label">Amount<span class="text-danger">*</span></label>
-                        <input id="defaultconfig" class="form-control amount" maxlength="39" name="amount"
-                            type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
-                        <span class="text-danger amount_error"></span>
-                    </div>
-                    <div class="mb-3 col-md-12">
-                        <label for="name" class="form-label">Note</label>
-                        <textarea name="note" class="form-control note" id="" placeholder="Enter Note (Optional)"
-                            rows="3"></textarea>
-                    </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="name" class="form-label">Transaction Account<span
+                                    class="text-danger">*</span></label>
+                            @php
+                                $payments = App\Models\Bank::all();
+                            @endphp
+                            <select class="form-select transaction_account" data-width="100%" name="transaction_account"
+                                onclick="errorRemove(this);" onblur="errorRemove(this);">
+                                @if ($payments->count() > 0)
+                                    @foreach ($payments as $payment)
+                                        <option value="{{ $payment->id }}">{{ $payment->name }}</option>
+                                    @endforeach
+                                @else
+                                    <option selected disabled>Please Add Payment</option>
+                                @endif
+                            </select>
+                            <span class="text-danger transaction_account_error"></span>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="name" class="form-label">Amount<span class="text-danger">*</span></label>
+                            <input id="defaultconfig" class="form-control amount" maxlength="39" name="amount"
+                                type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
+                            <span class="text-danger amount_error"></span>
+                        </div>
+                        <div class="mb-3 col-md-12">
+                            <label for="name" class="form-label">Note</label>
+                            <textarea name="note" class="form-control note" id="" placeholder="Enter Note (Optional)"
+                                rows="3"></textarea>
+                        </div>
 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary via_sale_save_payment">Payment</button>
+                </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary via_sale_save_payment">Payment</button>
-            </div>
-            </form>
         </div>
     </div>
-</div>
     <!-- Via Sale Payment End -->
 
 
     <iframe id="printFrame" src="" width="0" height="0"></iframe>
     <!-- Modal add Payment -->
-    <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal fade" id="duePayment" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
