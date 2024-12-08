@@ -114,7 +114,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/customer/edit/{id}', 'CustomerEdit')->name('customer.edit');
         Route::post('/customer/update/{id}', 'CustomerUpdate')->name('customer.update');
         Route::get('/customer/delete/{id}', 'CustomerDelete')->name('customer.delete');
-        // customer profiling 
+        // customer profiling
         Route::get('/customer/profile/{id}', 'CustomerProfile')->name('customer.profile');
     });
 
@@ -150,7 +150,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/find/{id}', 'find')->name('product.find');
         Route::get('/product/barcode/{id}', 'ProductBarcode')->name('product.barcode');
         Route::get('/search/{value}', 'globalSearch');
-        // product ledger 
+        // product ledger
         Route::get('/product/ledger/{id}', 'productLedger')->name('product.ledger');
     });
     // Product  related route(n)
@@ -182,7 +182,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/supplier/edit/{id}', 'edit')->name('supplier.edit');
         Route::post('/supplier/update/{id}', 'update')->name('supplier.update');
         Route::get('/supplier/destroy/{id}', 'destroy')->name('supplier.destroy');
-        // Supplier Profiling 
+        // Supplier Profiling
         Route::get('/supplier/profile/{id}', 'SupplierProfile')->name('supplier.profile');
     });
     // Expense related route(n)
@@ -329,7 +329,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/barcode/find/{id}', 'findProductWithBarcode')->name('product.barcode.find');
         Route::get('/sale/product/find/{id}', 'saleProductFind')->name('sale.product.find');
         Route::get('/product/view/sale', 'saleViewProduct');
-
         Route::post('/via/product/add', 'saleViaProductAdd');
     });
     // Transaction related route(n)
