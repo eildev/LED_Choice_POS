@@ -11,6 +11,7 @@
             </li>
         </ol>
     </nav>
+    {{-- @dd($transactions) --}}
 
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
@@ -119,7 +120,7 @@
                                                 @endphp
 
                                                 @foreach ($transactions as $transaction)
-                                                    @dd($transaction->balance)
+                                                    {{-- @dd($transaction->balance) --}}
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($transaction->date)->format('F j, Y') ?? '' }}
                                                         </td>
@@ -145,11 +146,8 @@
                                                         <td>
                                                             {{ number_format($transaction->credit, 2) ?? 0 }}
                                                         </td>
-
                                                         <td>
-
                                                             {{ number_format($transaction->balance, 2) ?? 0 }}
-
                                                         </td>
                                                         <td class="id">
                                                             <a href="#"
