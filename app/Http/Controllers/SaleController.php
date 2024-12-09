@@ -91,7 +91,7 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'customer_id' => 'required|numeric',
             'sale_date' => 'required',
@@ -147,7 +147,13 @@ class SaleController extends Controller
 
             $category = Category::where('name', 'Via Sell')->first();
             foreach ($selectedItems as $item) {
+                // if($item->dataType == 'product'){
+                //     $product = Product::findOrFail($item['product_id']);
+                // } else {
+                //     $product = ViaSale::findOrFail($item['product_id']);
+                // }
                 $product = Product::findOrFail($item['product_id']);
+               
 
                 // Determine if this should be a "via sell" or "normal sell"
                 $isViaSell = false;
