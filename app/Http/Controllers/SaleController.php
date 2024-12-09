@@ -147,13 +147,8 @@ class SaleController extends Controller
 
             $category = Category::where('name', 'Via Sell')->first();
             foreach ($selectedItems as $item) {
-                // if($item->dataType == 'product'){
-                //     $product = Product::findOrFail($item['product_id']);
-                // } else {
-                //     $product = ViaSale::findOrFail($item['product_id']);
-                // }
                 $product = Product::findOrFail($item['product_id']);
-               
+
 
                 // Determine if this should be a "via sell" or "normal sell"
                 $isViaSell = false;
@@ -779,45 +774,83 @@ class SaleController extends Controller
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            // 'name' => 'required|max:255',
-            // 'product_name' => 'required|max:255',
-            // 'name' => [
-            //     'nullable', // Name is optional if product_name is provided
-            //     'max:255',
-            //     'required_without:product_name', // Name is required only if product_name is empty
-            // ],
-            // 'product_name' => [
-            //     'nullable', // Product Name is optional if name is provided
-            //     'exists:via_products,id', // Validates the selected product_name exists in the database
-            //     'required_without:name', // Product Name is required only if name is empty
-            // ],
+            'name' => 'required|max:255',
             'price' => 'required',
             'cost' => 'required',
             'stock' => 'required',
             'transaction_account' => 'required',
-        ],);
+        ]);
 
         if ($validator->passes()) {
             $oldBalance = AccountTransaction::where('account_id', $request->transaction_account)->latest('created_at')->first();
             // dd($oldBalance->balance >= $request->via_paid);
             if ($oldBalance && $oldBalance->balance > 0 && $oldBalance->balance >= $request->via_paid) {
 
-                // $product = new Product;
-                $viaSale = new ViaSale;
-                if ($request->name) {
-                    $viaProduct = new ViaProduct;
-                    $viaProduct->product_name = $request->name;
-                    $viaProduct->save();
-                    // $product->name =  $request->name;
-                    $viaSale->via_product_id = $viaProduct->id;
-                } elseif ($request->via_product_name) {
-                    $viaSale->via_product_id = $request->via_product_name;
+                $maxBarcode = Product::where('branch_id', Auth::user()->branch_id)
+                    ->max('barcode');
+                $product = new Product;
+                $product->name =  $request->name;
+                $product->branch_id =  Auth::user()->branch_id;
+                if ($maxBarcode > 0) {
+                    $product->barcode =  $maxBarcode + 1;
+                } else {
+                    $product->barcode =  00001;
                 }
+                $categoryExist = Category::where('slug', 'like', '%via%')->first();
+                if ($categoryExist) {
+                    $product->category_id =  $categoryExist->id;
+                } else {
+                    $category = new Category;
+                    $category->name =  "Via Sell";
+                    $category->slug = Str::slug("via-sell");
+                    $category->save();
+                    $product->category_id =  $category->id;
+                }
+                $subcategoryExist = SubCategory::where('slug', 'like', '%via%')->first();
+                if ($subcategoryExist) {
+                    $product->subcategory_id =  $subcategoryExist->id;
+                } else {
+                    $categoryExist = Category::where('slug', 'like', '%via%')->first();
+                    $subcategory = new SubCategory;
+                    $subcategory->category_id =  $categoryExist->id;
+                    $subcategory->name =  "Via Sell";
+                    $subcategory->slug = Str::slug("via-sell");
+                    $subcategory->save();
+                    $product->subcategory_id =  $subcategory->id;
+                }
+                $brandExist = Brand::where('slug', 'like', '%via%')->first();
+                if ($brandExist) {
+                    $product->brand_id =  $brandExist->id;
+                } else {
+                    $brand = new Brand;
+                    $brand->name =  "Via Sell";
+                    $brand->slug = Str::slug("via-sell");
+                    $brand->save();
+                    $product->brand_id =  $brand->id;
+                }
+                $product->cost  =  $request->cost;
+                $product->price  =  $request->price;
+                $unitExist = Unit::where('name', 'like', '%Piece%')->first();
+                if ($unitExist) {
+                    $product->unit_id =  $unitExist->id;
+                } else {
+                    $unit = new Unit;
+                    $unit->name =  "Piece";
+                    $unit->related_by = 1;
+                    $unit->save();
+                    $product->unit_id = $unit->id;
+                }
+                $product->stock = $request->stock;
+                $product->save();
+
+                $viaSale = new ViaSale;
                 $viaSale->invoice_date = Carbon::now();
                 $viaSale->branch_id =  Auth::user()->branch_id;
                 $viaSale->invoice_number = $request->invoice_number;
                 $viaSale->processed_by = Auth::user()->id;
                 $viaSale->supplier_name = $request->via_supplier_name;
+                $viaSale->product_id = $product->id;
+                $viaSale->product_name = $request->name;
                 $viaSale->quantity = $request->stock;
                 $viaSale->cost_price = $request->cost;
                 $viaSale->sale_price = $request->price;
@@ -833,7 +866,6 @@ class SaleController extends Controller
                     $viaSale->status  = 1;
                 }
                 $viaSale->save();
-                $viaSale->load('viaProduct');
                 // account Transaction crud
                 $accountTransaction = new AccountTransaction;
                 $accountTransaction->branch_id =  Auth::user()->branch_id;
@@ -848,7 +880,7 @@ class SaleController extends Controller
 
                 return response()->json([
                     'status' => 200,
-                    'products' => $viaSale,
+                    'products' => $product,
                     'message' => 'Via Product Save Successfully',
                 ]);
             } else {

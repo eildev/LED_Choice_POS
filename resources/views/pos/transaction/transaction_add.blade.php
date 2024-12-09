@@ -92,12 +92,10 @@
                                                                 <i class="fa fa-print"></i><span
                                                                     style="padding-left: 5px">Receipt</span>
                                                             </a>
-
                                                             {{-- <a href=" id="delete"
                                                                 class="btn btn-sm btn-danger " title="Delete">
                                                                 Delete
                                                             </a> --}}
-
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -108,7 +106,6 @@
 
                                                     </td>
                                                 </tr>
-
                                             @endif
                                         </tbody>
                                     </table>
