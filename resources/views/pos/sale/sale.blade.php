@@ -320,7 +320,7 @@
     <!-- Via Sell -->
     <div class="modal fade" id="viaSellModal" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalScrollableTitle">Add Via Sell Product</h5>
@@ -378,14 +378,14 @@
                                 toggleFields('select'); // Optionally call the toggle function to handle dependent logic
                             }
                         </script>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Sell Price <span
                                     class="text-danger">*</span></label>
                             <input id="defaultconfig" class="form-control sell_price" maxlength="39" name="price"
                                 type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger sell_price_error"></span>
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Cost Price <span
                                     class="text-danger">*</span></label>
                             <input id="defaultconfig" class="form-control cost_price" maxlength="39" name="cost"
@@ -393,7 +393,7 @@
                             <span class="text-danger cost_price_error"></span>
                         </div>
 
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input id="defaultconfig" class="form-control via_quantity" maxlength="39" name="stock"
                                 type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
@@ -402,7 +402,7 @@
                         @php
                             $suppliers = App\Models\Supplier::get();
                         @endphp
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Supplier Name</label>
                             <select class="form-select via_supplier_name" data-width="100%" name="via_supplier_name">
                                 <option selected disabled>Select Supplier</option>
@@ -413,21 +413,21 @@
                             {{-- <input id="defaultconfig" class="form-control via_supplier_name" name="via_supplier_name"
                                 type="text"> --}}
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Total</label>
                             <input id="defaultconfig" class="form-control via_product_total" maxlength="39"
                                 name="via_product_total" type="number" readonly>
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Total Pay</label>
                             <input id="defaultconfig" class="form-control via_total_pay" name="via_total_pay"
                                 type="number" readonly>
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Paid</label>
                             <input id="defaultconfig" class="form-control via_paid" name="via_paid" type="number">
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Payement Method <span
                                     class="text-danger">*</span></label>
                             @php
@@ -446,7 +446,7 @@
                             </select>
                             <span class="text-danger transaction_account_error"></span>
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="name" class="form-label">Due</label>
                             <input id="defaultconfig" class="form-control via_due" name="via_due" type="number"
                                 readonly>
@@ -727,7 +727,7 @@
                     let newQuantity = currentQuantity + 1;
                     quantityInput.val(newQuantity);
                 } else {
-                    // console.log(product);
+                    console.log(product);
                     // If the row doesn't exist, add a new row
                     $('.showData').append(
                         `<tr class="data_row${product.id}" data-type='${product.name ? 'product' : 'via'}'>
@@ -769,7 +769,7 @@
                                                 `<span class="discount_amount${product.id} mt-2">${promotion.discount_value}</span>Tk`
                                         : `<span class="mt-2">00</span>`
                                     : `<input type="number" product-id="${product.id}" class="form-control product_discount${product.id} discountProduct" name="product_discount"  value="" />
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <input type="hidden" product-id="${product.id}" class="form-control produt_cost${product.id} productCost" name="produt_cost"  value="${product.cost}" />`
                                 }
                             </td>
                             <td>
