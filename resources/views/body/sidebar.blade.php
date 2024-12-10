@@ -6,7 +6,7 @@
             @else
                 EIL<span>POS</span>
             @endif --}}
-            <img src="{{ asset('/Logo-2.png') }}" alt="" height="40">
+        <img src="{{ asset('/Logo-2.png') }}" alt="" height="40">
         </a>
         <div class="sidebar-toggler not-active">
             <span></span>
@@ -105,7 +105,7 @@
                                         Products</a>
                                 </li>
                             @endif
-                              <li class="nav-item">
+                            <li class="nav-item">
                                 <a href="{{ route('product.via') }}"
                                     class="nav-link {{ request()->routeIs('product.via') ? 'nav_active' : '' }}">Via
                                     Products</a>
@@ -276,41 +276,41 @@
                 </li>
             @endif
             <li class="nav-item">
-                 @if (Auth::user()->can('employee.menu'))
-                <a class="nav-link {{ request()->routeIs('employee*') ? '' : 'collapsed' }}"
-                    data-bs-toggle="collapse" href="#employee" role="button" aria-expanded="false"
-                    aria-controls="emails">
-                    <i class="ms-2 link-icon" data-feather="mail"></i>
-                    <span class="link-title">Employee</span>
-                    <i class="link-arrow" data-feather="chevron-down"></i>
-                </a>
-                <div class="collapse {{ request()->routeIs('employee*') ? 'show' : '' }}" id="employee">
-                    <ul class="nav sub-menu">
-                       
+                @if (Auth::user()->can('employee.menu'))
+                    <a class="nav-link {{ request()->routeIs('employee*') ? '' : 'collapsed' }}"
+                        data-bs-toggle="collapse" href="#employee" role="button" aria-expanded="false"
+                        aria-controls="emails">
+                        <i class="ms-2 link-icon" data-feather="mail"></i>
+                        <span class="link-title">Employee</span>
+                        <i class="link-arrow" data-feather="chevron-down"></i>
+                    </a>
+                    <div class="collapse {{ request()->routeIs('employee*') ? 'show' : '' }}" id="employee">
+                        <ul class="nav sub-menu">
+
                             <li class="nav-item ">
                                 <a href="{{ route('employee.add') }}"
                                     class="nav-link {{ request()->routeIs('employee.add') ? 'nav_active' : '' }}">Add
                                     Employee</a>
                             </li>
-                      
-                        @if (Auth::user()->can('employee-salary.menu'))
-                            <li class="nav-item">
-                                <a href="{{ route('employee.salary.add') }}"
-                                    class="nav-link {{ request()->routeIs('employee.salary.add') ? 'nav_active' : '' }}">Add
-                                    Employee Salary</a>
-                            </li>
-                        @endif
-                        @if (Auth::user()->can('advanced-employee-salary.menu'))
+
+                            @if (Auth::user()->can('employee-salary.menu'))
+                                <li class="nav-item">
+                                    <a href="{{ route('employee.salary.add') }}"
+                                        class="nav-link {{ request()->routeIs('employee.salary.add') ? 'nav_active' : '' }}">Add
+                                        Employee Salary</a>
+                                </li>
+                            @endif
+                            {{-- @if (Auth::user()->can('advanced-employee-salary.menu'))
                             <li class="nav-item">
                                 <a href="{{ route('advanced.employee.salary.add') }}"
                                     class="nav-link {{ request()->routeIs('advanced.employee.salary.add') ? 'nav_active' : '' }}">Add
                                     Advanced
                                     Employee Salary</a>
                             </li>
-                        @endif
-                    </ul>
-                </div>
-                  @endif
+                        @endif --}}
+                        </ul>
+                    </div>
+                @endif
             </li>
 
             @if (Auth::user()->can('crm.menu'))
@@ -349,9 +349,9 @@
                     </div>
                 </li>
             @endif
-               @if (Auth::user()->can('report.menu'))
-            <li class="nav-item nav-category">All Reports</li>
-         
+            @if (Auth::user()->can('report.menu'))
+                <li class="nav-item nav-category">All Reports</li>
+
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('report*') ? '' : 'collapsed' }}"
                         data-bs-toggle="collapse" href="#majid" role="button" aria-expanded="false"
