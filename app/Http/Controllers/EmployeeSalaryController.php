@@ -29,110 +29,34 @@ class EmployeeSalaryController extends Controller
     {
         $oldBalance = AccountTransaction::where('account_id', $request->payment_method)->latest('created_at')->first();
         if ($oldBalance && $oldBalance->balance > 0 && $oldBalance->balance >= $request->debit) {
+            $employeeSalary = new EmployeeSalary;
+            $employeeSalary->employee_id =  $request->employee_id;
+            $employeeSalary->branch_id =  $request->branch_id;
+            $employeeSalary->date =  $request->date;
+            $employee = Employee::findOrFail($request->employee_id);
+            $employeeSalary->debit = $request->debit;
+            $employeeSalary->creadit = $employee->salary;
+            $employeeSalary->balance = $employee->salary - $request->debit;
+            $employeeSalary->payment_method =  $request->payment_method;
+            $employeeSalary->note =  $request->note;
+            $employeeSalary->created_at = Carbon::now();
+            $employeeSalary->save();
 
-            $requestMonth = Carbon::createFromFormat('Y-m-d', $request->date)->format('m');
-            $requestYear = Carbon::createFromFormat('Y-m-d', $request->date)->format('Y');
-            // Get the first and last day of the month
-            $firstDayOfMonth = Carbon::create($requestYear, $requestMonth, 1)->startOfMonth();
-            $lastDayOfMonth = Carbon::create($requestYear, $requestMonth, 1)->endOfMonth();
-            $employeeSalary = EmployeeSalary::where('employee_id', $request->employee_id)
-                ->where('branch_id', $request->branch_id)
-                // ->where('date', $request->date)
-                ->whereBetween('date', [$firstDayOfMonth, $lastDayOfMonth])
-                ->first();
-            // dd($employeeSalary->balance."Re".(float) $request->debit);
-            $debit = (float) $request->debit;
-            // dd($employeeSalary->balance);
-            $now_balance = 0;
-            if ($employeeSalary) {
-                $now_balance = (float) $employeeSalary->creadit  - $debit;
-            } else {
-                $now_balance = (float) $request->debit;
-            }
-            // if (!empty($employeeSalary) && (float) $employeeSalary->balance < $debit) {
-            //     $notification = [
-            //         'error' =>'Salary for this employee and branch has already been inserted to to this month you can update your employee Salaries',
-            //         'alert-type'=> 'error',
-            //     ];
-            //     return back()->with($notification);
-
-            // }
-            // if ($employeeSalary) {
-            //     $notification = [
-            //         'error' =>'Salary for this employee and branch has already been inserted to to this month you can update your employee Salaries',
-            //         'alert-type'=> 'error'
-            //     ];
-            // return back()->with($notification);
-
-            // }
-            // $employeeSalaryUp = Employee::where('salary', '<', $request->debit)->exists();
-            // if($employeeSalaryUp){
-            //     $notification = [
-            //         'error' => 'Salary for this employee is less than the debit amount.',
-            //         'alert-type' => 'error'
-            //     ];
-            //     return back()->with($notification);
-            // }
-            if ($employeeSalary) {
-                if (!empty($employeeSalary) && (float) (($employeeSalary->balance - $request->debit) < 0)) {
-                    $notification = [
-                        'error' => 'This Month Full Already Paid Or Salary limit reached',
-                        'alert-type' => 'error'
-                    ];
-                    return back()->with($notification);
-                } else {
-                    $employeeSalary->debit =  $employeeSalary->debit  +  $request->debit;
-                    $employeeSalary->balance = $employeeSalary->balance - $request->debit;
-                    $employeeSalary->update();
-                    //account Transaction Crud
-                    $accountTransaction = new AccountTransaction;
-                    $accountTransaction->branch_id =  Auth::user()->branch_id;
-                    $accountTransaction->reference_id = $employeeSalary->id;
-                    $accountTransaction->purpose =  'Employee Salary';
-                    $accountTransaction->account_id =  $request->payment_method;
-                    $accountTransaction->debit = $request->debit; // $request->Amount
-                    $oldBalance = AccountTransaction::where('account_id', $request->payment_method)->latest('created_at')->first();
-                    $accountTransaction->balance = $oldBalance->balance - $request->debit;
-                    $accountTransaction->created_at = Carbon::now();
-                    $accountTransaction->save();
-                    $notification = array(
-                        'message' => 'Employee Salary Updated Successfully',
-                        'alert-type' => 'info'
-                    );
-                    return redirect()->route('employee.salary.advanced.view')->with($notification);
-                }
-            } else {
-                $employeeSalary = new EmployeeSalary;
-                $employeeSalary->employee_id =  $request->employee_id;
-                $employeeSalary->branch_id =  $request->branch_id;
-                $requiestDebit =  $employeeSalary->debit =  $request->debit;
-                $employeeSalary->date =  $request->date;
-                $employee = Employee::findOrFail($request->employee_id);
-                $employeeSalary->creadit = $employee->salary;
-                $employeeSalary->balance = $employeeSalary->creadit - $request->debit;
-                $employeeSalary->payment_method =  $request->payment_method;
-                $employeeSalary->note =  $request->note;
-                $employeeSalary->created_at = Carbon::now();
-                $employeeSalary->updated_at = NULL;
-                $employeeSalary->save();
-
-                //account Transaction Crud
-                $accountTransaction = new AccountTransaction;
-                $accountTransaction->branch_id =  Auth::user()->branch_id;
-                $accountTransaction->reference_id = $employeeSalary->id;
-                $accountTransaction->purpose =  'Employee Salary';
-                $accountTransaction->account_id =  $request->payment_method;
-                $accountTransaction->debit = $request->debit; // $request->Amount
-                $oldBalance = AccountTransaction::where('account_id', $request->payment_method)->latest('created_at')->first();
-                $accountTransaction->balance = $oldBalance->balance - $request->debit;
-                $accountTransaction->created_at = Carbon::now();
-                $accountTransaction->save();
-                $notification = array(
-                    'message' => 'Employee Salary Send Successfully',
-                    'alert-type' => 'info'
-                );
-                return redirect()->route('employee.salary.view')->with($notification);
-            }
+            //account Transaction Crud
+            $accountTransaction = new AccountTransaction;
+            $accountTransaction->branch_id =  Auth::user()->branch_id;
+            $accountTransaction->reference_id = $employeeSalary->id;
+            $accountTransaction->purpose =  'Employee Salary';
+            $accountTransaction->account_id =  $request->payment_method;
+            $accountTransaction->debit = $request->debit; // $request->Amount
+            $accountTransaction->balance = $oldBalance->balance - $request->debit;
+            $accountTransaction->created_at = Carbon::now();
+            $accountTransaction->save();
+            $notification = array(
+                'message' => 'Employee Salary Send Successfully',
+                'alert-type' => 'info'
+            );
+            return redirect()->route('employee.salary.view')->with($notification);
         } else {
             $notification = [
                 'warning' => 'Your account Balance is low Please Select Another account',

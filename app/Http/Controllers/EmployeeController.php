@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\EmployeeSalary;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -100,4 +102,12 @@ class EmployeeController extends Controller
         );
         return redirect()->route('employee.view')->with($notification);
     }
+    public function EmployeeDetails($id)
+    {
+        $employee = Employee::findOrFail($id);
+        $salaries = EmployeeSalary::where('employee_id', $employee->id)->latest()->get();
+        $branch = Branch::findOrFail($employee->branch_id);
+        return view('pos.employee.view-details', compact('employee', 'salaries', 'branch'));
+    } //
+
 }

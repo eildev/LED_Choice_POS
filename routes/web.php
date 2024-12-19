@@ -161,6 +161,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee/edit/{id}', 'EmployeeEdit')->name('employee.edit');
         Route::post('/employee/update/{id}', 'EmployeeUpdate')->name('employee.update');
         Route::get('/employee/delete/{id}', 'EmployeeDelete')->name('employee.delete');
+        Route::get('/employee/details/{id}', 'EmployeeDetails')->name('employee.details');
     });
 
     // Banks related route
